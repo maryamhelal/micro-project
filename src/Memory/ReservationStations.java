@@ -379,8 +379,8 @@ public class ReservationStations {
 			busyload[i]=0;
 		}
 	}
-	public int[] getAddressload() {
-		return addressload;
+	public int getAddressload(int n) {
+		return addressload[n];
 	}
 	private void setAddressload(int n) {
 		addressload = new int[n];
@@ -453,8 +453,8 @@ public class ReservationStations {
 			busystore[i]=0;
 		}
 	}
-	public int[] getAddressstore() {
-		return addressstore;
+	public int getAddressstore(int n) {
+		return addressstore[n];
 	}
 	private void setAddressstore(int n) {
 		addressstore = new int[n];
