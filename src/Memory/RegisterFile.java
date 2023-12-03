@@ -1,14 +1,28 @@
 package Memory;
 
+import java.util.Random;
+
 public class RegisterFile {
 	String[] tag;
 	String[] q;
 	int[] content;
+	int[] changed;
 	
 	public RegisterFile() {
 		setTag();
 		setQ();
-		setContent();
+		generateContent();
+		changed = new int[64];
+	}
+	
+	public void generateContent() {
+		content = new int[64];
+		Random random = new Random();
+		int rand;
+		for(int i = 0; i < 64; i++) {
+			rand = random.nextInt(51);
+			content[i] = rand;
+		}
 	}
 	
 	public String[] getTag() {
@@ -39,6 +53,9 @@ public class RegisterFile {
 	public int[] getContent() {
 		return content;
 	}
+	public int getContentWithTag(int n) {
+		return content[n];
+	}
 	public void setContent() {
 		int n = 64;
 		content = new int[n];
@@ -49,17 +66,22 @@ public class RegisterFile {
 	public void setContentusingTag(int n, int val) {
 		content[n] = val;
 		q[n] = "0";
+		changed[n] = 1;
 	}
 	
 	public String toString() {
 		System.out.println("---------------------Register File---------------------");
-		System.out.println("Tag | Qi | Content");
+		System.out.println("Tag | Qi | Content | Changed");
 		for(int i=0;i<tag.length;i++) {
 			if(i==0)
 				System.out.println("-------Floating-point-------");
 			if(i==32)
 				System.out.println("-----------Integer-----------");
-			System.out.println(tag[i] + "  | " + q[i] + " | " + content[i]);
+			System.out.print(tag[i] + "  | " + q[i] + " | " + content[i] + " | ");
+			if(changed[i]==0)
+				System.out.println();
+			else
+				System.out.println("changed");
 		}
 		return "";
 	}

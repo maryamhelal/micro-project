@@ -121,15 +121,10 @@ public class Main {
 			} else
 				return true;
 		} else if(find.startsWith("ADD") || find.startsWith("SUB")) {
-			if(find.startsWith("ADDI") || find.startsWith("SUBI")) {
-				
-			}
-			else {
-				if(reservationStations.getQjadd(reservationStations.getTagUsingLineadd(index)).equals("0") && reservationStations.getQkadd(reservationStations.getTagUsingLineadd(index)).equals("0")) {
-					return false;
-				} else
-					return true;
-				}
+			if(reservationStations.getQjadd(reservationStations.getTagUsingLineadd(index)).equals("0") && reservationStations.getQkadd(reservationStations.getTagUsingLineadd(index)).equals("0")) {
+				return false;
+			} else
+				return true;
 		} else if(find.startsWith("L")) {
 			
 		} else if(find.startsWith("S")) {
@@ -163,7 +158,17 @@ public class Main {
 			insts[issued] = reservationStations.getMaxmul();
 		} else if(operation.startsWith("ADD") || operation.startsWith("SUB")) {
 			if(operation.startsWith("ADDI") || operation.startsWith("SUBI")) {
-				
+				String value1 = registerFile.getQ(mainMemory.getRegister1(issued)+32);
+				String value2 = registerFile.getQ(mainMemory.getRegister2(issued)+32);
+				String value3 = ""+mainMemory.getImm(issued);
+				String reg2 = "";
+				if(value1.equals("0")) {
+					registerFile.setQusingTag(mainMemory.getRegister1(issued), reservationStations.searchRegister(mainMemory.getRegister1(issued)));
+				}
+				if(value2.equals("0")) {
+					reg2 = "R"+(mainMemory.getRegister2(issued));
+				}
+				reservationStations.setOccupiedAdd(operation,reg2,value3,value2,"0",-1,issued);
 				if(operation.startsWith("ADDI"))
 					insts[issued] = 1;
 				else
@@ -228,17 +233,17 @@ public class Main {
 				}
 				if(insts[executed]==0) {
 					if(operation.startsWith("MUL")) {
-						result[executed] = mainMemory.getRegister2(executed) * mainMemory.getRegister3(executed);
+						result[executed] = registerFile.getContentWithTag(mainMemory.getRegister2(executed)) * registerFile.getContentWithTag(mainMemory.getRegister3(executed));
 					} else if(operation.startsWith("DIV")){
-						result[executed] = mainMemory.getRegister2(executed) / mainMemory.getRegister3(executed);
+						result[executed] = registerFile.getContentWithTag(mainMemory.getRegister2(executed)) / registerFile.getContentWithTag(mainMemory.getRegister3(executed));
 					} else if(operation.startsWith("ADDI")) {
-						result[executed] = mainMemory.getRegister2(executed) + mainMemory.getImm(executed);
+						result[executed] = registerFile.getContentWithTag(mainMemory.getRegister2(executed)) + mainMemory.getImm(executed);
 					} else if(operation.startsWith("SUBI")) {
-						result[executed] = mainMemory.getRegister2(executed) - mainMemory.getImm(executed);
+						result[executed] = registerFile.getContentWithTag(mainMemory.getRegister2(executed)) - mainMemory.getImm(executed);
 					} else if(operation.startsWith("ADD")) {
-						result[executed] = mainMemory.getRegister2(executed) + mainMemory.getRegister3(executed);
+						result[executed] = registerFile.getContentWithTag(mainMemory.getRegister2(executed)) + registerFile.getContentWithTag(mainMemory.getRegister3(executed));
 					} else if(operation.startsWith("SUB")) {
-						result[executed] = mainMemory.getRegister3(executed) - mainMemory.getRegister2(executed);
+						result[executed] = registerFile.getContentWithTag(mainMemory.getRegister3(executed)) - registerFile.getContentWithTag(mainMemory.getRegister3(executed));
 					} else if(operation.startsWith("L")) {
 						
 					} else if(operation.startsWith("S")) {
