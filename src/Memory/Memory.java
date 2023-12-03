@@ -3,9 +3,12 @@ package Memory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Random;
 
 public class Memory {
-	Object[] Memory = new Object[500];
+	int memorySize = 500;
+	Object[] Memory = new Object[memorySize];
+	int[] changed = new int[memorySize];
 	Object[] read = new Object[100];
 	String[] operations;
 	int[] destination;
@@ -15,6 +18,7 @@ public class Memory {
 	int[] register3;
 	int[] imm;
 	int[] jump;
+	String[] label;
 	String[] branch;
 	public static int count = 0;
 
@@ -28,6 +32,7 @@ public class Memory {
 				read[count] = line;
 				count++;
 			}
+			generateMemory();
 			setOperations();
 			file.close();
 			myReader.close();
@@ -47,6 +52,16 @@ public class Memory {
 
 	public void setMemory(int x, Object y) {
 		Memory[x] = y;
+		changed[x] = 1;
+	}
+	
+	public void generateMemory() {
+		Random random = new Random();
+		int rand;
+		for(int i = 0; i < memorySize; i++) {
+			rand = random.nextInt(51) + 1;
+			Memory[i] = rand;
+		}
 	}
 	
 	public Object[] getRead() {
@@ -83,6 +98,7 @@ public class Memory {
 		register3 = new int[c];
 		imm = new int[c];
 		jump = new int[c];
+		label = new String[c];
 		branch = new String[c];
 		for(int i=0;i<c;i++) {
 			destination[i] = -1;
@@ -146,6 +162,8 @@ public class Memory {
 						jump[i] = j;
 				}
 				branch[i] = (((String)read[i]).split(","))[1];
+			} else {
+				label[i] = (String)read[i];
 			}
 		}
 	}
@@ -174,12 +192,17 @@ public class Memory {
 	public String getBranch(int n) {
 		return branch[n];
 	}
+	public String getLabel(int n) {
+		return label[n];
+	}
 	
 	public String toString() {
 		System.out.println("------------------------Memory------------------------");
 		for(int i=0;i<Memory.length;i++) {
-			if(Memory[i]!=null)
+			if(changed[i]==1)
 				System.out.println(i + ": " + Memory[i]);
+//			else
+//				System.out.println(i + ": " + Memory[i] + "   not changed");
 		}
 //		System.out.println("---------------------Instructions---------------------");
 //		for(int i=0;i<read.length;i++) {

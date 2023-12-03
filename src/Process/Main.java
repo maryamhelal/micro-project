@@ -15,6 +15,7 @@ public class Main {
 	static int loadspace;
 	static int storespace;
 	int clock;
+	int line;
 	Memory mainMemory;
 	Queue<String> fetch = new LinkedList<String>();
 	Queue<String> issue = new LinkedList<String>();
@@ -28,6 +29,7 @@ public class Main {
 	
 	public Main() {
 		clock = 0;
+		line = 0;
 		mainMemory = new Memory("Instructions");
 		instructionsTable = new InstructionsTable(mainMemory.getOperations().length);
 		insts = new int[mainMemory.getOperations().length];
@@ -42,8 +44,10 @@ public class Main {
 		instructionsTable.setInstructions(mainMemory.getOperations());
 		while(!fetch.isEmpty() || !issue.isEmpty() || !execute.isEmpty() || !write.isEmpty() || clock == 0) {
 			System.out.println("******************* Clock Cycle: " + clock + " *******************");
-			if(clock < mainMemory.getOperations().length) {
-				fetch.add((String)mainMemory.getOperationsWithLocation(clock) + " " + clock);
+			if(line < mainMemory.getOperations().length) {
+				if(mainMemory.getLabel(line).equals(null))
+					fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line);
+				line++;
 			}
 			if(!write.isEmpty() && clock>=3) {
 				writeMethod();
@@ -125,13 +129,13 @@ public class Main {
 				return false;
 			} else
 				return true;
-		} else if(find.startsWith("L")) {
-			
 		} else if(find.startsWith("S")) {
 			if(reservationStations.getQstore(reservationStations.getTagUsingLinestore(index)).equals("0")) {
 				return false;
 			} else
 				return true;
+		} else if(find.startsWith("L")) {
+			
 		}
 		return false;
 	}
@@ -207,8 +211,9 @@ public class Main {
 			}
 			reservationStations.setOccupiedStore(mainMemory.getAddressposition(issued),reg,value, issued);
 			insts[issued] = reservationStations.getMaxstore();
-		} else
+		} else if(operation.startsWith("BENZ")){
 			insts[issued] = 1;
+		}
 		instructionsTable.setIssue(issued, clock);
 		execute.add(issue.remove());
 	}
@@ -230,6 +235,9 @@ public class Main {
 				} else if(operation.startsWith("S")) {
 					if(insts[executed]==reservationStations.getMaxstore())
 						instructionsTable.setExecutionStart(executed, clock);
+				} else if(operation.startsWith("BENZ")) {
+					if(insts[executed]==1)
+						instructionsTable.setExecutionStart(executed, clock);
 				}
 				if(insts[executed]==0) {
 					if(operation.startsWith("MUL")) {
@@ -248,6 +256,8 @@ public class Main {
 						
 					} else if(operation.startsWith("S")) {
 						
+					} else if(operation.startsWith("BENZ")) {
+						line = 0;
 					}
 					instructionsTable.setExecutionComplete(executed, clock);
 					insts[executed]=-2;
