@@ -20,8 +20,12 @@ public class RegisterFile {
 		Random random = new Random();
 		int rand;
 		for(int i = 0; i < 64; i++) {
-			rand = random.nextInt(51);
-			content[i] = rand;
+			if(i==33)
+				content[i] = 0;
+			else {
+				rand = random.nextInt(51);
+				content[i] = rand;
+			}
 		}
 	}
 	
@@ -55,6 +59,12 @@ public class RegisterFile {
 	}
 	public int getContentWithTag(int n) {
 		return content[n];
+	}
+	public int getContentWithTag(String n) {
+		for(int i=0;i<32;i++)
+			if(n.equals("F"+i))
+				return content[i];
+		return -1;
 	}
 	public void setContent() {
 		int n = 64;

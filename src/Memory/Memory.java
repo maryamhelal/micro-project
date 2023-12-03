@@ -47,6 +47,7 @@ public class Memory {
 	}
 	
 	public Object getMemoryWithLocation(int i) {
+		changed[i] = 1;
 		return Memory[i];
 	}
 

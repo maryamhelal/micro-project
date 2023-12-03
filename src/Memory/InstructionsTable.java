@@ -33,11 +33,11 @@ public class InstructionsTable {
 		}
 	}
 	
-	public String[] getIteration() {
-		return instructions;
+	public String getIteration(int n) {
+		return instructions[n];
 	}
-	public void setIteration(int index, int value) {
-		iteration[index]  = value;
+	public void incrementIteration(int index) {
+		iteration[index]++;
 	}
 	public String[] getInstructions() {
 		return instructions;
