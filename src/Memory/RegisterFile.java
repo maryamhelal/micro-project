@@ -1,6 +1,6 @@
 package Memory;
 
-import java.util.Random;
+//import java.util.Random;
 
 public class RegisterFile {
 	String[] tag;
@@ -17,14 +17,15 @@ public class RegisterFile {
 	
 	public void generateContent() {
 		content = new int[64];
-		Random random = new Random();
-		int rand;
+		//Random random = new Random();
+		//int rand;
 		for(int i = 0; i < 64; i++) {
-			if(i==33)
+			if(i==32)
 				content[i] = 0;
 			else {
-				rand = random.nextInt(51);
-				content[i] = rand;
+				//rand = random.nextInt(51);
+				//content[i] = rand;
+				content[i] = 1;
 			}
 		}
 	}
@@ -54,16 +55,16 @@ public class RegisterFile {
 	public void setQusingTag(int n, String value) {
 		q[n] = value;
 	}
-	public int[] getContent() {
-		return content;
-	}
-	public int getContentWithTag(int n) {
+	public int getContent(int n) {
 		return content[n];
 	}
 	public int getContentWithTag(String n) {
-		for(int i=0;i<32;i++)
+		for(int i=0;i<32;i++) {
 			if(n.equals("F"+i))
 				return content[i];
+			if(n.equals("R"+i))
+				return content[i+32];
+		}
 		return -1;
 	}
 	public void setContent() {

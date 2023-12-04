@@ -3,7 +3,7 @@ package Memory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Random;
+//import java.util.Random;
 
 public class Memory {
 	int memorySize = 500;
@@ -57,11 +57,12 @@ public class Memory {
 	}
 	
 	public void generateMemory() {
-		Random random = new Random();
-		int rand;
+		//Random random = new Random();
+		//int rand;
 		for(int i = 0; i < memorySize; i++) {
-			rand = random.nextInt(51) + 1;
-			Memory[i] = rand;
+			//rand = random.nextInt(51) + 1;
+			//Memory[i] = rand;
+			Memory[i] = 5;
 		}
 	}
 	
