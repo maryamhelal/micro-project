@@ -55,6 +55,36 @@ public class Main {
 					instructionsTable.incrementIteration(line);
 				line++;
 			}
+			//--------------------------start of printing queues--------------------------
+			if(!fetch.isEmpty()) {
+				System.out.print("Fetch Queue: ");
+				for(String value: fetch) {
+					System.out.print(value.split(" ")[1] + "  ");
+				}
+				System.out.println();
+			}
+			if(!issue.isEmpty()) {
+				System.out.print("Issue Queue: ");
+				for(String value: issue) {
+					System.out.print(value.split(" ")[1] + "  ");
+				}
+				System.out.println();
+			}
+			if(!execute.isEmpty()) {
+				System.out.print("Execute Queue: ");
+				for(String value: execute) {
+					System.out.print(value.split(" ")[1] + "  ");
+				}
+				System.out.println();
+			}
+			if(!write.isEmpty()) {
+				System.out.print("Write Queue: ");
+				for(String value: write) {
+					System.out.print(value.split(" ")[1] + "  ");
+				}
+				System.out.println();
+			}
+			//--------------------------------end--------------------------------
 			if(!write.isEmpty() && clock>=3) {
 				writeMethod();
 			}
@@ -65,8 +95,10 @@ public class Main {
 				issueMethod();
 			}
 			if(!fetch.isEmpty()) {
-				if(!isOccupied()) {
-					issue.add(fetch.remove());
+				isOccupied();
+				for(String value: issue) {
+					if(fetch.contains(value))
+						fetch.remove(value);
 				}
 			}
 			mainMemory.toString();
@@ -105,18 +137,21 @@ public class Main {
 		}
 	}
 	
-	public boolean isOccupied() {
+	public void isOccupied() {
 		String find = fetch.peek();
-		if(find.startsWith("MUL") || find.startsWith("DIV")){
-			return reservationStations.isOccupiedMul();
+		if(find.startsWith("MUL") || find.startsWith("DIV")) {
+			if(!reservationStations.isOccupiedMul())
+				issue.add(find);
 		} else if(find.startsWith("ADD") || find.startsWith("SUB")) {
-			return reservationStations.isOccupiedAdd();
+			if(!reservationStations.isOccupiedAdd())
+				issue.add(find);
 		} else if(find.startsWith("L")) {
-			return reservationStations.isOccupiedLoad();
+			if(!reservationStations.isOccupiedLoad())
+				issue.add(find);
 		} else if(find.startsWith("S")) {
-			return reservationStations.isOccupiedStore();
+			if(!reservationStations.isOccupiedStore())
+				issue.add(find);
 		}
-		return true;
 	}
 	
 	public boolean isWaiting(String find) {
