@@ -13,7 +13,6 @@ public class Memory {
 	String[] operations;
 	int[] destination;
 	int[] addressposition;
-	int[] register1;
 	int[] register2;
 	int[] register3;
 	int[] imm;
@@ -95,7 +94,6 @@ public class Memory {
 		operations = new String[c];
 		destination = new int[c];
 		addressposition = new int[c];
-		register1 = new int[c];
 		register2 = new int[c];
 		register3 = new int[c];
 		imm = new int[c];
@@ -104,7 +102,6 @@ public class Memory {
 		branch = new String[c];
 		for(int i=0;i<c;i++) {
 			destination[i] = -1;
-			register1[i] = -1;
 			register2[i] = -1;
 			register3[i] = -1;
 			imm[i] = -1;
@@ -134,7 +131,7 @@ public class Memory {
 				//System.out.println("floating point: " + result1 + " " + result2 + " " + result3);
 				for(int j = 0;j<32;j++) {
 					if(result1.equals("F"+j))
-						register1[i] = j;
+						destination[i] = j;
 					if(result2.equals("F"+j))
 						register2[i] = j;
 					if(result3.equals("F"+j))
@@ -150,7 +147,7 @@ public class Memory {
 				//System.out.println("integer: " + result1 + " " + result2 + " " + result3);
 				for(int j = 0;j<32;j++) {
 					if(result1.equals("R"+j))
-						register1[i] = j;
+						destination[i] = j;
 					if(result2.equals("R"+j))
 						register2[i] = j;
 				}
@@ -175,9 +172,6 @@ public class Memory {
 	}
 	public int getAddressposition(int n) {
 		return addressposition[n];
-	}
-	public int getRegister1(int n) {
-		return register1[n];
 	}
 	public int getRegister2(int n) {
 		return register2[n];
@@ -215,17 +209,13 @@ public class Memory {
 //		for(int i=0;i<operations.length;i++) {
 //			System.out.println(operations[i]);
 //		}
-//		System.out.println("---------------------Destination---------------------");
-//		for(int i=0;i<destination.length;i++) {
-//			System.out.println(destination[i]);
-//		}
 //		System.out.println("------------------Effective Address------------------");
 //		for(int i=0;i<addressposition.length;i++) {
 //			System.out.println(addressposition[i]);
 //		}
-//		System.out.println("---------------------Register 1---------------------");
-//		for(int i=0;i<register1.length;i++) {
-//			System.out.println(register1[i]);
+//		System.out.println("---------------------Destination---------------------");
+//		for(int i=0;i<destination.length;i++) {
+//			System.out.println(destination[i]);
 //		}
 //		System.out.println("---------------------Register 2---------------------");
 //		for(int i=0;i<register2.length;i++) {
