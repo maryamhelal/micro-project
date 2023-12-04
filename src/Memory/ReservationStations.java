@@ -9,7 +9,6 @@ public class ReservationStations {
 	String[] qjmul;
 	String[] qkmul;
 	int[] addressmul;
-	int[] countmul;
 	int maxmul;
 	int[] linemul;
 	
@@ -21,14 +20,12 @@ public class ReservationStations {
 	String[] qjadd;
 	String[] qkadd;
 	int[] addressadd;
-	int[] countadd;
 	int maxadd;
 	int[] lineadd;
 	
 	String[] tagload;
 	int[] busyload;
 	int[] addressload;
-	int[] countload;
 	int maxload;
 	int[] lineload;
 	
@@ -37,7 +34,6 @@ public class ReservationStations {
 	int[] addressstore;
 	String[] vstore;
 	String[] qstore;
-	int[] countstore;
 	int maxstore;
 	int[] linestore;
 	
@@ -64,7 +60,6 @@ public class ReservationStations {
 		setQjmul(n);
 		setQkmul(n);
 		setAddressmul(n);
-		countmul = new int[n];
 		setMaxmul(count);
 		setLinemul(n);
 	}
@@ -78,7 +73,6 @@ public class ReservationStations {
 		setQjadd(n);
 		setQkadd(n);
 		setAddressadd(n);
-		countadd = new int[n];
 		setMaxadd(count);
 		setLineadd(n);
 	}
@@ -87,7 +81,6 @@ public class ReservationStations {
 		setTagload(n);
 		setBusyload(n);
 		setAddressload(n);
-		countload = new int[n];
 		setMaxload(count);
 		setLineload(n);
 	}
@@ -98,7 +91,6 @@ public class ReservationStations {
 		setAddressstore(n);
 		setVstore(n);
 		setQstore(n);
-		countstore = new int[n];
 		setMaxstore(count);
 		setLinestore(n);
 	}
@@ -184,23 +176,12 @@ public class ReservationStations {
 			linemul[i] = -1;
 		}
 	}
-	public int getTagUsingLinemul(int n) {
+	private int getTagUsingLinemul(int n) {
 		for(int i=0;i<tagmul.length;i++) {
 			if(linemul[i]==n)
 				return i;
 		}
 		return -1;
-	}
-	public void setAvailableMul(int line) {
-		int n = getTagUsingLinemul(line);
-		busymul[n] = 0;
-		opmul[n] = "";
-		vjmul[n] = "";
-		vkmul[n] = "";
-		qjmul[n] = "";
-		qkmul[n] = "";
-		addressmul[n] = -1;
-		linemul[n] = -1;
 	}
 	public boolean isOccupiedMul() {
 		int n = -1;
@@ -314,23 +295,12 @@ public class ReservationStations {
 			lineadd[i] = -1;
 		}
 	}
-	public int getTagUsingLineadd(int n) {
+	private int getTagUsingLineadd(int n) {
 		for(int i=0;i<tagadd.length;i++) {
 			if(lineadd[i]==n)
 				return i;
 		}
 		return -1;
-	}
-	public void setAvailableAdd(int line) {
-		int n = getTagUsingLineadd(line);
-		busyadd[n] = 0;
-		opadd[n] = "";
-		vjadd[n] = "";
-		vkadd[n] = "";
-		qjadd[n] = "";
-		qkadd[n] = "";
-		addressadd[n] = -1;
-		lineadd[n] = -1;
 	}
 	public boolean isOccupiedAdd() {
 		int n = -1;
@@ -399,18 +369,12 @@ public class ReservationStations {
 			lineload[i] = -1;
 		}
 	}
-	public int getTagUsingLineload(int n) {
+	private int getTagUsingLineload(int n) {
 		for(int i=0;i<tagload.length;i++) {
 			if(lineload[i]==n)
 				return i;
 		}
 		return -1;
-	}
-	public void setAvailableLoad(int line) {
-		int n = getTagUsingLineload(line);
-		busyload[n] = 0;
-		addressload[n] = -1;
-		lineload[n] = -1;
 	}
 	public boolean isOccupiedLoad() {
 		int n = -1;
@@ -492,20 +456,12 @@ public class ReservationStations {
 			linestore[i] = -1;
 		}
 	}
-	public int getTagUsingLinestore(int n) {
+	private int getTagUsingLinestore(int n) {
 		for(int i=0;i<tagstore.length;i++) {
 			if(linestore[i]==n)
 				return i;
 		}
 		return -1;
-	}
-	public void setAvailableStore(int line) {
-		int n = getTagUsingLinestore(line);
-		busystore[n] = 0;
-		addressstore[n] = -1;
-		vstore[n] = "";
-		qstore[n] = "";
-		linestore[n] = -1;
 	}
 	public boolean isOccupiedStore() {
 		int n = -1;
@@ -535,47 +491,6 @@ public class ReservationStations {
 		linestore[n] = line;
 	}
 	
-	public int[] getCountmul() {
-		return countmul;
-	}
-	public int[] getCountadd() {
-		return countadd;
-	}
-	public int[] getCountload() {
-		return countload;
-	}
-	public int[] getCountstore() {
-		return countstore;
-	}
-	public boolean setCountmul(int n) {
-		countmul[n]--;
-		if(countmul[n] == 0) {
-			return true;
-		} else
-			return false;
-	}
-	public boolean setCountadd(int n) {
-		countadd[n]--;
-		if(countadd[n] == 0) {
-			return true;
-		} else
-			return false;
-	}
-	public boolean setCountload(int n) {
-		countload[n]--;
-		if(countload[n] == 0) {
-			return true;
-		} else
-			return false;
-	}
-	public boolean setCountstore(int n) {
-		countstore[n]--;
-		if(countstore[n] == 0) {
-			return true;
-		} else
-			return false;
-	}
-	
 	public int getMaxmul() {
 		return maxmul;
 	}
@@ -590,39 +505,27 @@ public class ReservationStations {
 	}
 	private void setMaxmul(int max) {
 		maxmul = max;
-		for(int i=0;i<countmul.length;i++) {
-			countmul[i] = maxmul;
-		}
 	}
 	private void setMaxadd(int max) {
 		maxadd = max;
-		for(int i=0;i<countadd.length;i++) {
-			countadd[i] = maxadd;
-		}
 	}
 	private void setMaxload(int max) {
 		maxload = max;
-		for(int i=0;i<countload.length;i++) {
-			countload[i] = maxload;
-		}
 	}
 	private void setMaxstore(int max) {
 		maxstore = max;
-		for(int i=0;i<countstore.length;i++) {
-			countstore[i] = maxstore;
-		}
 	}
-	public String searchRegister(int n) {
+	public String searchRegister(String register) {
 		for(int i=0;i<vjmul.length;i++) {
-			if(vjmul[i].equals("F"+n) || vkmul[i].equals("F"+n)) 
+			if(vjmul[i].equals(register) || vkmul[i].equals(register)) 
 				return tagmul[i];
 		}
 		for(int i=0;i<vjadd.length;i++) {
-			if(vjadd[i].equals("F"+n) || vkadd[i].equals("F"+n)) 
+			if(vjadd[i].equals(register) || vkadd[i].equals(register)) 
 				return tagadd[i];
 		}
 		for(int i=0;i<vstore.length;i++) {
-			if(vstore[i].equals("F"+n)) 
+			if(vstore[i].equals(register)) 
 				return tagstore[i];
 		}
 		return "0";
@@ -656,12 +559,67 @@ public class ReservationStations {
 			}
 		}
 	}
+	public String getTagUsingLine(int n) {
+		for(int i=0;i<tagmul.length;i++) {
+			if(linemul[i]==n)
+				return tagmul[i];
+		}
+		for(int i=0;i<tagadd.length;i++) {
+			if(lineadd[i]==n)
+				return tagadd[i];
+		}
+		for(int i=0;i<tagload.length;i++) {
+			if(lineload[i]==n)
+				return tagload[i];
+		}
+		for(int i=0;i<tagstore.length;i++) {
+			if(linestore[i]==n)
+				return tagstore[i];
+		}
+		return "";
+	}
+	public void setAvailable(int line) {
+		String tag = getTagUsingLine(line);
+		if(tag.startsWith("M")) {
+			int n = getTagUsingLinemul(line);
+			busymul[n] = 0;
+			opmul[n] = "";
+			vjmul[n] = "";
+			vkmul[n] = "";
+			qjmul[n] = "";
+			qkmul[n] = "";
+			addressmul[n] = -1;
+			linemul[n] = -1;
+		} else if(tag.startsWith("A")) {
+			int n = getTagUsingLineadd(line);
+			busyadd[n] = 0;
+			opadd[n] = "";
+			vjadd[n] = "";
+			vkadd[n] = "";
+			qjadd[n] = "";
+			qkadd[n] = "";
+			addressadd[n] = -1;
+			lineadd[n] = -1;
+		} else if(tag.startsWith("L")) {
+			int n = getTagUsingLineload(line);
+			busyload[n] = 0;
+			addressload[n] = -1;
+			lineload[n] = -1;
+		} else if(tag.startsWith("S")) {
+			int n = getTagUsingLinestore(line);
+			busystore[n] = 0;
+			addressstore[n] = -1;
+			vstore[n] = "";
+			qstore[n] = "";
+			linestore[n] = -1;
+		}	
+	}
 	
 	public String toString() {
 		System.out.println("--------------------------Mul--------------------------");
-		System.out.println("Tag | Busy | Vj | Vq | Qj | Qk | A");
+		System.out.println("Tag | Op |  Busy | Vj | Vq | Qj | Qk | A");
 		for(int i=0;i<tagmul.length;i++) {
-			System.out.print(tagmul[i] + "  |  " + busymul[i] + "   | " + vjmul[i] + " | " + vkmul[i] + " | " + qjmul[i] + " | " + qkmul[i] + " | ");
+			System.out.print(tagmul[i] + "  | " + opmul[i] + " |  " + busymul[i] + "   | " + vjmul[i] + " | " + vkmul[i] + " | " + qjmul[i] + " | " + qkmul[i] + " | ");
 			if(addressmul[i] != -1) {
 				System.out.println(addressmul[i]);
 			} else {
@@ -669,9 +627,9 @@ public class ReservationStations {
 			}
 		}
 		System.out.println("--------------------------Add--------------------------");
-		System.out.println("Tag | Busy | Vj | Vq | Qj | Qk | A");
+		System.out.println("Tag | Op | Busy | Vj | Vq | Qj | Qk | A");
 		for(int i=0;i<tagadd.length;i++) {
-			System.out.print(tagadd[i] + "  |  " + busyadd[i] + "   | " + vjadd[i] + " | " + vkadd[i] + " | " + qjadd[i] + " | " + qkadd[i] + " | ");
+			System.out.print(tagadd[i] + "  | " + opadd[i] + " |  " + busyadd[i] + "   | " + vjadd[i] + " | " + vkadd[i] + " | " + qjadd[i] + " | " + qkadd[i] + " | ");
 			if(addressadd[i] != -1) {
 				System.out.println(addressadd[i]);
 			} else {

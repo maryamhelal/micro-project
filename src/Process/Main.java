@@ -77,20 +77,20 @@ public class Main {
 	public void loadInstructions() {
 		for(int i=0;i<mainMemory.getOperations().length;i++) {
 			if(mainMemory.getOperationsWithLocation(i).startsWith("MUL") || mainMemory.getOperationsWithLocation(i).startsWith("DIV")){
-				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getRegister1(i));
+				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
 				instructionsTable.setJ(i, "F"+mainMemory.getRegister2(i));
 				instructionsTable.setK(i, "F"+mainMemory.getRegister3(i));
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("ADD") || mainMemory.getOperationsWithLocation(i).startsWith("SUB")) {
 				if(mainMemory.getOperationsWithLocation(i).startsWith("ADDI") || mainMemory.getOperationsWithLocation(i).startsWith("SUBI")) {
-					instructionsTable.setDestinationRegister(i, "R"+mainMemory.getRegister1(i));
+					instructionsTable.setDestinationRegister(i, "R"+mainMemory.getDestination(i));
 					instructionsTable.setJ(i, "R"+mainMemory.getRegister2(i));
 					instructionsTable.setK(i, ""+mainMemory.getImm(i));
 				} else if(mainMemory.getOperationsWithLocation(i).startsWith("ADD")) {
-					instructionsTable.setDestinationRegister(i, "F"+mainMemory.getRegister1(i));
+					instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
 					instructionsTable.setJ(i, "F"+mainMemory.getRegister2(i));
 					instructionsTable.setK(i, "F"+mainMemory.getRegister3(i));
 				} else {
-					instructionsTable.setDestinationRegister(i, "F"+mainMemory.getRegister1(i));
+					instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
 					instructionsTable.setJ(i, "F"+mainMemory.getRegister3(i));
 					instructionsTable.setK(i, "F"+mainMemory.getRegister2(i));
 				}
@@ -146,13 +146,13 @@ public class Main {
 		String operation = (String)issue.peek().split(" ")[0];
 		int issued = Integer.parseInt((String)issue.peek().split(" ")[1]);
 		if(operation.startsWith("MUL") || operation.startsWith("DIV")){
-			String value1 = registerFile.getQ(mainMemory.getRegister1(issued));
-			String value2 = registerFile.getQ(mainMemory.getRegister2(issued));
-			String value3 = registerFile.getQ(mainMemory.getRegister3(issued));
+			String value1 = registerFile.getQ(instructionsTable.getDestinationRegister(issued));
+			String value2 = registerFile.getQ(instructionsTable.getJ(issued));
+			String value3 = registerFile.getQ(instructionsTable.getK(issued));
 			String reg2 = "";
 			String reg3 = "";
 			if(value1.equals("0")) {
-				registerFile.setQusingTag(mainMemory.getRegister1(issued), reservationStations.searchRegister(mainMemory.getRegister1(issued)));
+				registerFile.setQ(instructionsTable.getDestinationRegister(issued), reservationStations.searchRegister(instructionsTable.getDestinationRegister(issued)));
 			}
 			if(value2.equals("0")) {
 				reg2 = "F"+mainMemory.getRegister2(issued);
@@ -163,55 +163,39 @@ public class Main {
 			reservationStations.setOccupiedMul(operation,reg2,reg3,value2,value3,-1,issued);
 			insts[issued] = reservationStations.getMaxmul();
 		} else if(operation.startsWith("ADD") || operation.startsWith("SUB")) {
-			if(operation.startsWith("ADDI") || operation.startsWith("SUBI")) {
-				String value1 = registerFile.getQ(mainMemory.getRegister1(issued)+32);
-				String value2 = registerFile.getQ(mainMemory.getRegister2(issued)+32);
-				String value3 = ""+mainMemory.getImm(issued);
-				String reg2 = "";
-				if(value1.equals("0")) {
-					registerFile.setQusingTag(mainMemory.getRegister1(issued), reservationStations.searchRegister(mainMemory.getRegister1(issued)));
-				}
-				if(value2.equals("0")) {
-					reg2 = "R"+(mainMemory.getRegister2(issued));
-				}
-				reservationStations.setOccupiedAdd(operation,reg2,value3,value2,"0",-1,issued);
-				if(operation.startsWith("ADDI"))
-					insts[issued] = 1;
-				else
-					insts[issued] = reservationStations.getMaxadd();
-			} else {
-				String value1 = registerFile.getQ(mainMemory.getRegister1(issued));
-				String value2 = registerFile.getQ(mainMemory.getRegister2(issued));
-				String value3 = registerFile.getQ(mainMemory.getRegister3(issued));
-				String reg2 = "";
-				String reg3 = "";
-				if(value1.equals("0")) {
-					registerFile.setQusingTag(mainMemory.getRegister1(issued), reservationStations.searchRegister(mainMemory.getRegister1(issued)));
-				}
-				if(value2.equals("0")) {
-					reg2 = "F"+mainMemory.getRegister2(issued);
-				}
-				if(value3.equals("0")) {
-					reg3 = "F"+mainMemory.getRegister3(issued);
-				}
-				reservationStations.setOccupiedAdd(operation,reg2,reg3,value2,value3,-1,issued);
-				insts[issued] = reservationStations.getMaxadd();
+			String value1 = registerFile.getQ(instructionsTable.getDestinationRegister(issued));
+			String value2 = registerFile.getQ(instructionsTable.getJ(issued));
+			String value3 = registerFile.getQ(instructionsTable.getK(issued));
+			String reg2 = "";
+			String reg3 = "";
+			if(value1.equals("0")) {
+				registerFile.setQ(instructionsTable.getDestinationRegister(issued), reservationStations.searchRegister(instructionsTable.getDestinationRegister(issued)));
 			}
+			if(value2.equals("0")) {
+				reg2 = instructionsTable.getJ(issued);
+			}
+			if(value3.equals("0")) {
+				reg3 = instructionsTable.getK(issued);
+			}
+			reservationStations.setOccupiedAdd(operation,reg2,reg3,value2,value3,-1,issued);
+			if(operation.startsWith("ADDI"))
+				insts[issued] = 1;
+			else
+				insts[issued] = reservationStations.getMaxadd();
 		} else if(operation.startsWith("L")) {
-			String value = registerFile.getQ(mainMemory.getDestination(issued));
+			String value = registerFile.getQ(instructionsTable.getDestinationRegister(issued));
 			if(value.equals("0")) {
-				registerFile.setQusingTag(mainMemory.getDestination(issued), reservationStations.searchRegister(mainMemory.getDestination(issued)));
+				registerFile.setQ(instructionsTable.getDestinationRegister(issued), reservationStations.searchRegister(instructionsTable.getDestinationRegister(issued)));
 			}
 			reservationStations.setOccupiedLoad(mainMemory.getAddressposition(issued),issued);
 			insts[issued] = reservationStations.getMaxload();
 		} else if(operation.startsWith("S")) {
-			String value = registerFile.getQ(mainMemory.getDestination(issued));
+			String value = registerFile.getQ(instructionsTable.getDestinationRegister(issued));
 			String reg = "";
 			if(value.equals("0")) {
-				registerFile.setQusingTag(mainMemory.getDestination(issued), reservationStations.searchRegister(mainMemory.getDestination(issued)));
-				reg = "F"+mainMemory.getDestination(issued);
+				reg = instructionsTable.getDestinationRegister(issued);
 			}
-			reservationStations.setOccupiedStore(mainMemory.getAddressposition(issued),reg,value, issued);
+			reservationStations.setOccupiedStore(mainMemory.getAddressposition(issued),reg,value,issued);
 			insts[issued] = reservationStations.getMaxstore();
 		} else if(operation.startsWith("BENZ")){
 			insts[issued] = 1;
@@ -245,21 +229,21 @@ public class Main {
 				}
 				if(insts[executed]==0) {
 					if(operation.startsWith("MUL")) {
-						result[executed] = registerFile.getContent(mainMemory.getRegister2(executed)) * registerFile.getContent(mainMemory.getRegister3(executed));
+						result[executed] = registerFile.getContent(instructionsTable.getJ(executed)) * registerFile.getContent(instructionsTable.getK(executed));
 					} else if(operation.startsWith("DIV")){
-						result[executed] = registerFile.getContent(mainMemory.getRegister2(executed)) / registerFile.getContent(mainMemory.getRegister3(executed));
+						result[executed] = registerFile.getContent(instructionsTable.getJ(executed)) / registerFile.getContent(instructionsTable.getK(executed));
 					} else if(operation.startsWith("ADDI")) {
-						result[executed] = registerFile.getContent(mainMemory.getRegister2(executed)+32) + mainMemory.getImm(executed);
+						result[executed] = registerFile.getContent(instructionsTable.getJ(executed)) + mainMemory.getImm(executed);
 					} else if(operation.startsWith("SUBI")) {
-						result[executed] = registerFile.getContent(mainMemory.getRegister2(executed)+32) - mainMemory.getImm(executed);
+						result[executed] = registerFile.getContent(instructionsTable.getJ(executed)) - mainMemory.getImm(executed);
 					} else if(operation.startsWith("ADD")) {
-						result[executed] = registerFile.getContent(mainMemory.getRegister2(executed)) + registerFile.getContent(mainMemory.getRegister3(executed));
+						result[executed] = registerFile.getContent(instructionsTable.getJ(executed)) + registerFile.getContent(instructionsTable.getK(executed));
 					} else if(operation.startsWith("SUB")) {
-						result[executed] = registerFile.getContent(mainMemory.getRegister3(executed)) - registerFile.getContent(mainMemory.getRegister3(executed));
+						result[executed] = registerFile.getContent(instructionsTable.getK(executed)) - registerFile.getContent(instructionsTable.getJ(executed));
 					} else if(operation.startsWith("L")) {
 						result[executed] = (int)mainMemory.getMemoryWithLocation(reservationStations.getAddressload(executed));
 					} else if(operation.startsWith("S")) {
-						result[executed] = registerFile.getContentWithTag(reservationStations.getVstore(executed));
+						result[executed] = registerFile.getContent(reservationStations.getVstore(executed));
 					} else if(operation.startsWith("BNEZ")) {
 						line = 0;
 					}
@@ -284,37 +268,19 @@ public class Main {
 	public void writeMethod() { //FIFO
 		int written = Integer.parseInt((String)write.peek().split(" ")[1]);
 		String operation = (String)write.peek().split(" ")[0];
-		if(operation.startsWith("MUL") || operation.startsWith("DIV")){
-			if(registerFile.getQ(written).equals("M" + reservationStations.getTagUsingLinemul(written)) || registerFile.getQ(written).equals("0")) {
-				registerFile.setContentusingTag(mainMemory.getRegister1(written), result[written]);
-				reservationStations.writeWaiting(registerFile.getQ(mainMemory.getRegister1(written)), mainMemory.getRegister1(written));
-				reservationStations.setAvailableMul(written);
-			}
-		} else if(operation.startsWith("ADD") || operation.startsWith("SUB")) {
-			if(operation.startsWith("ADDI") || operation.startsWith("SUBI")) {
-				if(registerFile.getQ(written).equals("A" + reservationStations.getTagUsingLineadd(written)) || registerFile.getQ(written).equals("0")) {
-					registerFile.setContentusingTag(mainMemory.getRegister1(written)+32, result[written]);
-					reservationStations.writeWaiting(registerFile.getQ(mainMemory.getRegister1(written)), mainMemory.getRegister1(written));
-					reservationStations.setAvailableAdd(written);
-				}
-			} else {
-				if(registerFile.getQ(written).equals("A" + reservationStations.getTagUsingLineadd(written)) || registerFile.getQ(written).equals("0")) {
-					registerFile.setContentusingTag(mainMemory.getRegister1(written), result[written]);
-					reservationStations.writeWaiting(registerFile.getQ(mainMemory.getRegister1(written)), mainMemory.getRegister1(written));
-					reservationStations.setAvailableAdd(written);
-				}
-			}
-		} else if(operation.startsWith("L")) {
-			if(registerFile.getQ(written).equals("L" + reservationStations.getTagUsingLineload(written)) || registerFile.getQ(written).equals("0")) {
-				registerFile.setContentusingTag(mainMemory.getDestination(written), result[written]);
-				reservationStations.writeWaiting(registerFile.getQ(mainMemory.getDestination(written)), mainMemory.getDestination(written));
-				reservationStations.setAvailableLoad(written);
+		String registerWrite = instructionsTable.getDestinationRegister(written);
+		
+		if(operation.startsWith("MUL") || operation.startsWith("DIV") || operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("L")){
+			if(registerFile.getQ(registerWrite).equals(reservationStations.getTagUsingLine(written)) || registerFile.getQ(registerWrite).equals("0")) {
+				registerFile.setContent(registerWrite, result[written]);
+				reservationStations.writeWaiting(registerFile.getQ(registerWrite), mainMemory.getDestination(written));
+				reservationStations.setAvailable(written);
 			}
 		} else if(operation.startsWith("S")) {
 			mainMemory.setMemory(reservationStations.getAddressstore(written),result[written]);
-			reservationStations.setAvailableStore(written);
-			
+			reservationStations.setAvailable(written);
 		}
+		reservationStations.setAvailable(written);
 		instructionsTable.setWriteResult(written, clock);
 		write.remove();
 	}

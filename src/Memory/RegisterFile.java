@@ -15,7 +15,7 @@ public class RegisterFile {
 		changed = new int[64];
 	}
 	
-	public void generateContent() {
+	private void generateContent() {
 		content = new int[64];
 		//Random random = new Random();
 		//int rand;
@@ -33,7 +33,7 @@ public class RegisterFile {
 	public String[] getTag() {
 		return tag;
 	}
-	public void setTag() {
+	private void setTag() {
 		tag = new String[64];
 		for(int i = 0; i < 32; i++) {
 			tag[i] = "F"+i;
@@ -42,42 +42,52 @@ public class RegisterFile {
 			tag[i] = "R"+(i-32);
 		}
 	}
-	public String getQ(int n) {
-		return q[n];
+	public String getQ(String register) {
+		for(int i=0;i<32;i++) {
+			if(tag[i].equals(register))
+				return q[i];
+			if(tag[i+32].equals(register))
+				return q[i+32];
+		}
+		return "0";
 	}
-	public void setQ() {
+	private void setQ() {
 		int n = 64;
 		q = new String[n];
 		for(int i = 0; i < n; i++) {
 			q[i] = "0";
 		}
 	}
-	public void setQusingTag(int n, String value) {
-		q[n] = value;
-	}
-	public int getContent(int n) {
-		return content[n];
-	}
-	public int getContentWithTag(String n) {
+	public void setQ(String register, String value) {
 		for(int i=0;i<32;i++) {
-			if(n.equals("F"+i))
+			if(tag[i].equals(register))
+				q[i] = value;
+			if(tag[i+32].equals(register))
+				q[i+32] = value;
+		}
+	}
+	public int getContent(String register) {
+		for(int i=0;i<32;i++) {
+			if(tag[i].equals(register))
 				return content[i];
-			if(n.equals("R"+i))
+			if(tag[i+32].equals(register))
 				return content[i+32];
 		}
 		return -1;
 	}
-	public void setContent() {
-		int n = 64;
-		content = new int[n];
-		for(int i = 0; i < n; i++) {
-			content[i] = 0;
+	public void setContent(String register, int val) {
+		for(int i=0;i<32;i++) {
+			if(tag[i].equals(register)) {
+				content[i] = val;
+				q[i] = "0";
+				changed[i] = 1;
+			}
+			if(tag[i+32].equals(register)) {
+				content[i+32] = val;
+				q[i+32] = "0";
+				changed[i+32] = 1;
+			}
 		}
-	}
-	public void setContentusingTag(int n, int val) {
-		content[n] = val;
-		q[n] = "0";
-		changed[n] = 1;
 	}
 	
 	public String toString() {
