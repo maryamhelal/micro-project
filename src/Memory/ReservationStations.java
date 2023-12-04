@@ -130,8 +130,8 @@ public class ReservationStations {
 			opmul[i] = "";
 		}
 	}
-	public String getVjmul(int n) {
-		return vjmul[n];
+	public String getVjmul(int line) {
+		return vjmul[getTagUsingLinemul(line)];
 	}
 	private void setVjmul(int n) {
 		vjmul = new String[n];
@@ -139,8 +139,8 @@ public class ReservationStations {
 			vjmul[i] = "";
 		}
 	}
-	public String getVkmul(int n) {
-		return vkmul[n];
+	public String getVkmul(int line) {
+		return vkmul[getTagUsingLinemul(line)];
 	}
 	private void setVkmul(int n) {
 		vkmul = new String[n];
@@ -148,8 +148,8 @@ public class ReservationStations {
 			vkmul[i] = "";
 		}
 	}
-	public String getQjmul(int n) {
-		return qjmul[n];
+	public String getQjmul(int line) {
+		return qjmul[getTagUsingLinemul(line)];
 	}
 	private void setQjmul(int n) {
 		qjmul = new String[n];
@@ -157,8 +157,8 @@ public class ReservationStations {
 			qjmul[i] = "";
 		}
 	}
-	public String getQkmul(int n) {
-		return qkmul[n];
+	public String getQkmul(int line) {
+		return qkmul[getTagUsingLinemul(line)];
 	}
 	private void setQkmul(int n) {
 		qkmul = new String[n];
@@ -191,7 +191,8 @@ public class ReservationStations {
 		}
 		return -1;
 	}
-	public void setAvailableMul(int n) {
+	public void setAvailableMul(int line) {
+		int n = getTagUsingLinemul(line);
 		busymul[n] = 0;
 		opmul[n] = "";
 		vjmul[n] = "";
@@ -259,8 +260,8 @@ public class ReservationStations {
 			opadd[i] = "";
 		}
 	}
-	public String getVjadd(int n) {
-		return vjadd[n];
+	public String getVjadd(int line) {
+		return vjadd[getTagUsingLineadd(line)];
 	}
 	private void setVjadd(int n) {
 		vjadd = new String[n];
@@ -268,8 +269,8 @@ public class ReservationStations {
 			vjadd[i] = "";
 		}
 	}
-	public String getVkadd(int n) {
-		return vkadd[n];
+	public String getVkadd(int line) {
+		return vkadd[getTagUsingLineadd(line)];
 	}
 	private void setVkadd(int n) {
 		vkadd = new String[n];
@@ -277,8 +278,8 @@ public class ReservationStations {
 			vkadd[i] = "";
 		}
 	}
-	public String getQjadd(int n) {
-		return qjadd[n];
+	public String getQjadd(int line) {
+		return qjadd[getTagUsingLineadd(line)];
 	}
 	private void setQjadd(int n) {
 		qjadd = new String[n];
@@ -286,8 +287,8 @@ public class ReservationStations {
 			qjadd[i] = "";
 		}
 	}
-	public String getQkadd(int n) {
-		return qkadd[n];
+	public String getQkadd(int line) {
+		return qkadd[getTagUsingLineadd(line)];
 	}
 	private void setQkadd(int n) {
 		qkadd = new String[n];
@@ -320,7 +321,8 @@ public class ReservationStations {
 		}
 		return -1;
 	}
-	public void setAvailableAdd(int n) {
+	public void setAvailableAdd(int line) {
+		int n = getTagUsingLineadd(line);
 		busyadd[n] = 0;
 		opadd[n] = "";
 		vjadd[n] = "";
@@ -379,8 +381,8 @@ public class ReservationStations {
 			busyload[i]=0;
 		}
 	}
-	public int getAddressload(int n) {
-		return addressload[n];
+	public int getAddressload(int line) {
+		return addressload[getTagUsingLineload(line)];
 	}
 	private void setAddressload(int n) {
 		addressload = new int[n];
@@ -404,7 +406,8 @@ public class ReservationStations {
 		}
 		return -1;
 	}
-	public void setAvailableLoad(int n) {
+	public void setAvailableLoad(int line) {
+		int n = getTagUsingLineload(line);
 		busyload[n] = 0;
 		addressload[n] = -1;
 		lineload[n] = -1;
@@ -453,8 +456,8 @@ public class ReservationStations {
 			busystore[i]=0;
 		}
 	}
-	public int getAddressstore(int n) {
-		return addressstore[n];
+	public int getAddressstore(int line) {
+		return addressstore[getTagUsingLinestore(line)];
 	}
 	private void setAddressstore(int n) {
 		addressstore = new int[n];
@@ -462,8 +465,8 @@ public class ReservationStations {
 			addressstore[i] = -1;
 		}
 	}
-	public String getVstore(int n) {
-		return vstore[n];
+	public String getVstore(int line) {
+		return vstore[getTagUsingLinestore(line)];
 	}
 	private void setVstore(int n) {
 		vstore = new String[n];
@@ -471,8 +474,8 @@ public class ReservationStations {
 			vstore[i] = "";
 		}
 	}
-	public String getQstore(int n) {
-		return qstore[n];
+	public String getQstore(int line) {
+		return qstore[getTagUsingLinestore(line)];
 	}
 	private void setQstore(int n) {
 		qstore = new String[n];
@@ -496,7 +499,8 @@ public class ReservationStations {
 		}
 		return -1;
 	}
-	public void setAvailableStore(int n) {
+	public void setAvailableStore(int line) {
+		int n = getTagUsingLinestore(line);
 		busystore[n] = 0;
 		addressstore[n] = -1;
 		vstore[n] = "";
