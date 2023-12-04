@@ -531,30 +531,30 @@ public class ReservationStations {
 		return "0";
 	}
 	
-	public void writeWaiting(String tagdestination, int n) {
+	public void writeWaiting(String tagdestination, String register) {
 		for(int i=0;i<qjmul.length;i++) {
 			if(qjmul[i].equals(tagdestination)) {
-				vjmul[i] = "F"+n;
+				vjmul[i] = register;
 				qjmul[i] = "0";
 			}
 			if(qkmul[i].equals(tagdestination)) {
-				vkmul[i] = "F"+n;
+				vkmul[i] = register;
 				qkmul[i] = "0";
 			}
 		}
 		for(int i=0;i<qjadd.length;i++) {
 			if(qjadd[i].equals(tagdestination)) {
-				vjadd[i] = "F"+n;
+				vjadd[i] = register;
 				qjadd[i] = "0";
 			}
 			if(qkadd[i].equals(tagdestination)) {
-				vkadd[i] = "F"+n;
+				vkadd[i] = register;
 				qkadd[i] = "0";
 			}
 		}
 		for(int i=0;i<qstore.length;i++) {
 			if(qstore[i].equals(tagdestination)) {
-				vstore[i] = "F"+n;
+				vstore[i] = register;
 				qstore[i] = "0";
 			}
 		}
