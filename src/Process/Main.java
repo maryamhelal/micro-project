@@ -26,6 +26,7 @@ public class Main {
 	ReservationStations reservationStations;
 	RegisterFile registerFile;
 	InstructionsTable instructionsTable;
+	boolean stopFetching;
 	
 	public Main() {
 		clock = 0;
@@ -38,6 +39,7 @@ public class Main {
 		reservationStations = new ReservationStations();
 		registerFile = new RegisterFile();
 		loadInstructions();
+		stopFetching = false;
 	}
 	
 	public void run() {
@@ -49,8 +51,12 @@ public class Main {
 			}
 			System.out.println("********************** Clock Cycle: " + clock + " **********************");
 			if(line < mainMemory.getOperations().length) {
-				if(mainMemory.getLabel(line) == null)
+				if(mainMemory.getLabel(line) == null && !stopFetching) {
 					fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line);
+					if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ")) {
+						stopFetching = true;
+					}
+				}
 				else
 					instructionsTable.incrementIteration(line);
 				line++;
@@ -132,6 +138,9 @@ public class Main {
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("S")) {
 				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
 				instructionsTable.setJ(i, ""+mainMemory.getAddressposition(i));
+			} else if(mainMemory.getOperationsWithLocation(i).startsWith("BNEZ")) {
+				instructionsTable.setDestinationRegister(i, "R"+mainMemory.getJump(i));
+				instructionsTable.setJ(i, mainMemory.getBranch(i));
 			}
 			insts[i] = -1;
 		}
@@ -142,7 +151,7 @@ public class Main {
 		if(find.startsWith("MUL") || find.startsWith("DIV")) {
 			if(!reservationStations.isOccupiedMul())
 				issue.add(find);
-		} else if(find.startsWith("ADD") || find.startsWith("SUB")) {
+		} else if(find.startsWith("ADD") || find.startsWith("SUB") || find.startsWith("BNEZ")) {
 			if(!reservationStations.isOccupiedAdd())
 				issue.add(find);
 		} else if(find.startsWith("L")) {
@@ -222,8 +231,14 @@ public class Main {
 			}
 			reservationStations.setOccupiedStore(mainMemory.getAddressposition(issued),reg,value,issued);
 			insts[issued] = reservationStations.getMaxstore();
-		} else if(operation.startsWith("BENZ")){
+		} else if(operation.startsWith("BNEZ")){
+			String value1 = registerFile.getQ(destinationRegister);
+			String reg2 = instructionsTable.getJ(issued);
+			reservationStations.setOccupiedAdd(operation,reg2,"","0","0",-1,issued);
 			insts[issued] = 1;
+			if(value1.equals("0")) {
+				registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(issued));
+			}
 		}
 		instructionsTable.setIssue(issued, clock);
 		execute.add(issue.remove());
@@ -269,11 +284,18 @@ public class Main {
 						result[executed] = (int)mainMemory.getMemoryWithLocation(reservationStations.getAddressload(executed));
 					} else if(operation.startsWith("S")) {
 						result[executed] = registerFile.getContent(reservationStations.getVstore(executed));
-					} else if(operation.startsWith("BNEZ")) {
-						line = 0;
 					}
 					instructionsTable.setExecutionComplete(executed, clock);
 					insts[executed]=-2;
+					if(operation.startsWith("BNEZ")) {
+						if(registerFile.getQ(instructionsTable.getDestinationRegister(executed)).equals("0")) {
+							if(registerFile.getContent(instructionsTable.getDestinationRegister(executed)) != 0)
+								line = mainMemory.getLabelWithString(mainMemory.getBranch(executed));
+							stopFetching = false;
+							instructionsTable.setExecutionComplete(executed, clock);
+							insts[executed]=-2;
+						}
+					}
 				} else {
 					if(insts[executed]!=0) {
 						insts[executed]--;

@@ -191,6 +191,13 @@ public class Memory {
 	public String getLabel(int n) {
 		return label[n];
 	}
+	public int getLabelWithString(String branch) {
+		for(int i=0;i<label.length;i++) {
+			if(label[i].equals(branch))
+				return i;
+		}
+		return -1;
+	}
 	
 	public String toString() {
 		System.out.println("------------------------Memory------------------------");
