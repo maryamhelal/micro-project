@@ -196,7 +196,9 @@ public class Memory {
 	}
 	public int getLabelWithString(String branch) {
 		for(int i=0;i<label.length;i++) {
-			if(label[i].equals(branch))
+			if(label[i]==null)
+				continue;
+			else if(label[i].equals(branch))
 				return i;
 		}
 		return -1;

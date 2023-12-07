@@ -39,15 +39,13 @@ public class InstructionsTable {
 	public void setIteration(int n) {
 		iteration[n] = iter;
 	}
-	public void incrementIteration() {
-		iter++;
-	}
 	public int getIter() {
 		return iter;
 	}
-	public String[] getInstructions() {
-		return instructions;
+	public void incrementIteration() {
+		iter++;
 	}
+	
 	public void setInstructions(String[] value) {
 		instructions  = value;
 	}
@@ -69,14 +67,9 @@ public class InstructionsTable {
 	public void setK(int index, String value) {
 		k[index] = value;
 	}
-	public int[] getIssue() {
-		return issue;
-	}
+	
 	public void setIssue(int index, int value) {
 		issue[index] = value;
-	}
-	public String[] getExecutionComplete() {
-		return executionComplete;
 	}
 	public void setExecutionStart(int index, int value) {
 		String v = value + "..";
@@ -85,12 +78,10 @@ public class InstructionsTable {
 	public void setExecutionComplete(int index, int value) {
 		executionComplete[index] += value;
 	}
-	public int[] getWriteResult() {
-		return writeResult;
-	}
 	public void setWriteResult(int index, int value) {
 		writeResult[index] = value;
 	}
+	
 	public String toString() {
 		System.out.println("----------------------Instructions Table----------------------");
 		if(iter==0) {
