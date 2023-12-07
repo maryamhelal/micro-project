@@ -9,7 +9,7 @@ public class InstructionsTable {
 	int[] issue;
 	String[] executionComplete;
 	int[] writeResult;
-	boolean iter;
+	int iter;
 	
 	public InstructionsTable(int n) {
 		iteration = new int[n];
@@ -20,7 +20,7 @@ public class InstructionsTable {
 		issue = new int[n];
 		executionComplete = new String[n];
 		writeResult = new int[n];
-		iter = false;
+		iter = 0;
 		for(int i=0;i<n;i++) {
 			iteration[i]=-1;
 			instructions[i]="";
@@ -33,11 +33,17 @@ public class InstructionsTable {
 		}
 	}
 	
-	public String getIteration(int n) {
-		return instructions[n];
+	public int getIteration(int n) {
+		return iteration[n];
 	}
-	public void incrementIteration(int index) {
-		iteration[index]++;
+	public void setIteration(int n) {
+		iteration[n] = iter;
+	}
+	public void incrementIteration() {
+		iter++;
+	}
+	public int getIter() {
+		return iter;
 	}
 	public String[] getInstructions() {
 		return instructions;
@@ -87,7 +93,7 @@ public class InstructionsTable {
 	}
 	public String toString() {
 		System.out.println("----------------------Instructions Table----------------------");
-		if(!iter) {
+		if(iter==0) {
 			System.out.println("Instruction |  j   |  k   | Issue | Execution Complete | Write Result");
 			for(int i=0;i<instructions.length;i++) {
 				System.out.print(instructions[i]);
@@ -112,27 +118,29 @@ public class InstructionsTable {
 		} else {
 			System.out.println("Iteration# | Instruction |  j   |  k   | Issue | Execution Complete | Write Result");
 			for(int i=0;i<instructions.length;i++) {
-				System.out.print("     ");
-				if(iteration[i]!=-1)
-					System.out.print(iteration[i]);
-				System.out.print("     | ");
-				System.out.print(instructions[i]);
-				System.out.print(" | ");
-				System.out.print(destinationRegister[i]);
-				System.out.print(" | ");
-				System.out.print(j[i]);
-				System.out.print(" | ");
-				System.out.print(k[i]);
-				System.out.print(" |   ");
-				if(issue[i]!=-1)
-					System.out.print(issue[i]);
-				System.out.print("   |        ");
-				System.out.print(executionComplete[i]);
-				System.out.print("        |      ");
-				if(writeResult[i]!=-1)
-					System.out.println(writeResult[i]);
-				else
-					System.out.println();
+				if(j[i]!="") {
+					System.out.print("     ");
+					if(iteration[i]!=-1)
+						System.out.print(iteration[i]);
+					System.out.print("     | ");
+					System.out.print(instructions[i]);
+					System.out.print(" | ");
+					System.out.print(destinationRegister[i]);
+					System.out.print(" | ");
+					System.out.print(j[i]);
+					System.out.print(" | ");
+					System.out.print(k[i]);
+					System.out.print(" |   ");
+					if(issue[i]!=-1)
+						System.out.print(issue[i]);
+					System.out.print("   |        ");
+					System.out.print(executionComplete[i]);
+					System.out.print("        |      ");
+					if(writeResult[i]!=-1)
+						System.out.println(writeResult[i]);
+					else
+						System.out.println();
+				}
 				//System.out.println("     " + iteration[i] + "     | " + instructions[i] + " | "  + destinationRegister[i] + " | "  + j[i] + " | "  + k[i] + " |   " + issue[i] + "   |        " + executionComplete[i] + "        |      " + writeResult[i]);
 			}
 		}
