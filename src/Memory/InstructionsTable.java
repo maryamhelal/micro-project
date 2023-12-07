@@ -20,7 +20,28 @@ public class InstructionsTable {
 		issue = new int[n];
 		executionComplete = new String[n];
 		writeResult = new int[n];
-		iter = 0;
+		this.iter = 0;
+		for(int i=0;i<n;i++) {
+			iteration[i]=-1;
+			instructions[i]="";
+			destinationRegister[i]="";
+			j[i]="";
+			k[i]="";
+			issue[i]=-1;
+			executionComplete[i]="";
+			writeResult[i]=-1;
+		}
+	}
+	public InstructionsTable(int n, int iter) {
+		iteration = new int[n];
+		instructions = new String[n];
+		destinationRegister = new String[n];
+		j = new String[n];
+		k = new String[n];
+		issue = new int[n];
+		executionComplete = new String[n];
+		writeResult = new int[n];
+		this.iter = iter;
 		for(int i=0;i<n;i++) {
 			iteration[i]=-1;
 			instructions[i]="";
@@ -33,17 +54,8 @@ public class InstructionsTable {
 		}
 	}
 	
-	public int getIteration(int n) {
-		return iteration[n];
-	}
 	public void setIteration(int n) {
 		iteration[n] = iter;
-	}
-	public int getIter() {
-		return iter;
-	}
-	public void incrementIteration() {
-		iter++;
 	}
 	
 	public void setInstructions(String[] value) {

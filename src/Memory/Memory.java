@@ -191,8 +191,10 @@ public class Memory {
 	public String getBranch(int n) {
 		return branch[n];
 	}
-	public String getLabel(int n) {
-		return label[n];
+	public boolean getLabel(int n) {
+		if(label[n]==null)
+			return false;
+		return true;
 	}
 	public int getLabelWithString(String branch) {
 		for(int i=0;i<label.length;i++) {
