@@ -9,39 +9,24 @@ public class RegisterFile {
 	int[] changed;
 	
 	public RegisterFile() {
-		setTag();
-		setQ();
-		generateContent();
-		changed = new int[64];
-	}
-	
-	private void generateContent() {
-		content = new int[64];
-		//Random random = new Random();
-		//int rand;
-		for(int i = 0; i < 64; i++) {
-			if(i==32)
-				content[i] = 0;
-			else {
-				//rand = random.nextInt(51);
-				//content[i] = rand;
-				content[i] = 1;
+		int n = 64;
+		tag = new String[n];
+		q = new String[n];
+		content = new int[n];
+		changed = new int[n];
+		for(int i=0;i<n;i++) {
+			q[i] = "0";
+			content[i] = 1;
+			if(i<32) {
+				tag[i] = "F"+i;
+			} else {
+				tag[i] = "R"+(i-32);
+				if(i==32)
+					content[i] = 0;
 			}
 		}
 	}
-	
-	public String[] getTag() {
-		return tag;
-	}
-	private void setTag() {
-		tag = new String[64];
-		for(int i = 0; i < 32; i++) {
-			tag[i] = "F"+i;
-		}
-		for(int i = 32; i < 64; i++) {
-			tag[i] = "R"+(i-32);
-		}
-	}
+
 	public String getQ(String register) {
 		for(int i=0;i<32;i++) {
 			if(tag[i].equals(register))
@@ -51,18 +36,11 @@ public class RegisterFile {
 		}
 		return "0";
 	}
-	private void setQ() {
-		int n = 64;
-		q = new String[n];
-		for(int i = 0; i < n; i++) {
-			q[i] = "0";
-		}
-	}
 	public void setQ(String register, String value) {
 		for(int i=0;i<32;i++) {
 			if(tag[i].equals(register))
 				q[i] = value;
-			if(tag[i+32].equals(register))
+			if(tag[i+32].equals(register) && i!=0)
 				q[i+32] = value;
 		}
 	}
@@ -82,7 +60,7 @@ public class RegisterFile {
 				q[i] = "0";
 				changed[i] = 1;
 			}
-			if(tag[i+32].equals(register)) {
+			if(tag[i+32].equals(register) && i!=0) {
 				content[i+32] = val;
 				q[i+32] = "0";
 				changed[i+32] = 1;
