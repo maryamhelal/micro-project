@@ -19,6 +19,7 @@ public class Memory {
 	int[] jump;
 	String[] label;
 	String[] branch;
+	boolean isIteration;
 	public static int count = 0;
 
 	public Memory(String fileName) {
@@ -51,8 +52,8 @@ public class Memory {
 	}
 
 	public void setMemory(int x, Object y) {
-		Memory[x] = y;
 		changed[x] = 1;
+		Memory[x] = y;
 	}
 	
 	public void generateMemory() {
@@ -87,6 +88,7 @@ public class Memory {
 	
 	public void setOperations() {
 		int c = 0;
+		isIteration = false;
 		for(int i=0;i<read.length;i++) {
 			if(read[i]!=null)
 				c++;
@@ -154,7 +156,7 @@ public class Memory {
 				imm[i]=Integer.parseInt(result3);
 			} else if(operations[i].equals("BNEZ")) {
 				String result;
-				result = (((String)read[i]).split(" "))[1];
+				result = ((((String)read[i]).split(" "))[1]).split(",")[0];
 				//System.out.println("jump: " + result + " " + (((String)read[i]).split(","))[1]);
 				for(int j = 0;j<32;j++) {
 					if(result.equals("R"+j))
@@ -163,6 +165,7 @@ public class Memory {
 				branch[i] = (((String)read[i]).split(","))[1];
 			} else {
 				label[i] = (String)read[i];
+				isIteration = true;
 			}
 		}
 	}
@@ -197,6 +200,9 @@ public class Memory {
 				return i;
 		}
 		return -1;
+	}
+	public boolean isIteration() {
+		return isIteration;
 	}
 	
 	public String toString() {
@@ -243,6 +249,10 @@ public class Memory {
 //		System.out.println("-----------------------Branch-----------------------");
 //		for(int i=0;i<branch.length;i++) {
 //			System.out.println(branch[i]);
+//		}
+//		System.out.println("-----------------------Label-----------------------");
+//		for(int i=0;i<label.length;i++) {
+//			System.out.println(label[i]);
 //		}
 		return "";
 	}

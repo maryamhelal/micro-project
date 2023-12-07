@@ -16,6 +16,7 @@ public class Main {
 	static int storespace;
 	int clock;
 	int line;
+	int lengthOfArrays;
 	Memory mainMemory;
 	Queue<String> fetch = new LinkedList<String>();
 	Queue<String> issue = new LinkedList<String>();
@@ -27,24 +28,29 @@ public class Main {
 	RegisterFile registerFile;
 	InstructionsTable instructionsTable;
 	boolean stopFetching;
+	boolean startFetching;
 	
 	public Main() {
 		clock = 0;
 		line = 0;
 		mainMemory = new Memory("Instructions");
-		instructionsTable = new InstructionsTable(mainMemory.getOperations().length);
-		insts = new int[mainMemory.getOperations().length];
-		result = new int[mainMemory.getOperations().length];
+		if(mainMemory.isIteration())
+			lengthOfArrays = 1000;
+		else
+			lengthOfArrays = mainMemory.getOperations().length;
+		instructionsTable = new InstructionsTable(lengthOfArrays);
+		insts = new int[lengthOfArrays];
+		result = new int[lengthOfArrays];
 		//reservationStations = new ReservationStations(mulspace,addspace,loadspace,storespace,mulcount,addcount,loadcount,storecount);
 		reservationStations = new ReservationStations();
 		registerFile = new RegisterFile();
-		loadInstructions();
+		loadInstructions(0);
 		stopFetching = false;
+		startFetching = false;
 	}
 	
 	public void run() {
-		instructionsTable.setInstructions(mainMemory.getOperations());
-		while(!fetch.isEmpty() || !issue.isEmpty() || !execute.isEmpty() || !write.isEmpty() || clock == 0) {
+		while(!fetch.isEmpty() || !issue.isEmpty() || !execute.isEmpty() || !write.isEmpty() || clock == 0 || startFetching) {
 			if(clock==1000) {
 				System.out.println("Timed out");
 				break;
@@ -52,45 +58,20 @@ public class Main {
 			System.out.println("********************** Clock Cycle: " + clock + " **********************");
 			if(line < mainMemory.getOperations().length) {
 				if(mainMemory.getLabel(line) == null && !stopFetching) {
+					startFetching = false;
 					fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line);
+					instructionsTable.setIteration(clock);
 					if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ")) {
 						stopFetching = true;
 					}
+				} else if(mainMemory.getLabel(line) != null) {
+					startFetching = true;
+					instructionsTable.incrementIteration();
+					loadInstructions(mainMemory.getOperations().length*instructionsTable.getIter());
 				}
-				else
-					instructionsTable.incrementIteration(line);
 				line++;
 			}
-			//--------------------------start of printing queues--------------------------
-			if(!fetch.isEmpty()) {
-				System.out.print("Fetch Queue: ");
-				for(String value: fetch) {
-					System.out.print(value.split(" ")[1] + "  ");
-				}
-				System.out.println();
-			}
-			if(!issue.isEmpty()) {
-				System.out.print("Issue Queue: ");
-				for(String value: issue) {
-					System.out.print(value.split(" ")[1] + "  ");
-				}
-				System.out.println();
-			}
-			if(!execute.isEmpty()) {
-				System.out.print("Execute Queue: ");
-				for(String value: execute) {
-					System.out.print(value.split(" ")[1] + "  ");
-				}
-				System.out.println();
-			}
-			if(!write.isEmpty()) {
-				System.out.print("Write Queue: ");
-				for(String value: write) {
-					System.out.print(value.split(" ")[1] + "  ");
-				}
-				System.out.println();
-			}
-			//--------------------------------end--------------------------------
+			printQueues();
 			if(!write.isEmpty() && clock>=3) {
 				writeMethod();
 			}
@@ -107,42 +88,42 @@ public class Main {
 						fetch.remove(value);
 				}
 			}
-			mainMemory.toString();
-			reservationStations.toString();
-			registerFile.toString();
-			instructionsTable.toString();
+			print();
 			clock++;
 		}
 		System.out.println("************************************************************");
 	}
 	
-	public void loadInstructions() {
+	public void loadInstructions(int index) {
+		int counting = index;
+		instructionsTable.setInstructions(mainMemory.getOperations());
 		for(int i=0;i<mainMemory.getOperations().length;i++) {
+			counting = index + i;
 			if(mainMemory.getOperationsWithLocation(i).startsWith("MUL") || mainMemory.getOperationsWithLocation(i).startsWith("DIV")){
-				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
-				instructionsTable.setJ(i, "F"+mainMemory.getRegister2(i));
-				instructionsTable.setK(i, "F"+mainMemory.getRegister3(i));
+				instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
+				instructionsTable.setJ(counting, "F"+mainMemory.getRegister2(i));
+				instructionsTable.setK(counting, "F"+mainMemory.getRegister3(i));
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("ADD") || mainMemory.getOperationsWithLocation(i).startsWith("SUB")) {
 				if(mainMemory.getOperationsWithLocation(i).startsWith("ADDI") || mainMemory.getOperationsWithLocation(i).startsWith("SUBI")) {
-					instructionsTable.setDestinationRegister(i, "R"+mainMemory.getDestination(i));
-					instructionsTable.setJ(i, "R"+mainMemory.getRegister2(i));
-					instructionsTable.setK(i, ""+mainMemory.getImm(i));
+					instructionsTable.setDestinationRegister(counting, "R"+mainMemory.getDestination(i));
+					instructionsTable.setJ(counting, "R"+mainMemory.getRegister2(i));
+					instructionsTable.setK(counting, ""+mainMemory.getImm(i));
 				} else {
-					instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
-					instructionsTable.setJ(i, "F"+mainMemory.getRegister2(i));
-					instructionsTable.setK(i, "F"+mainMemory.getRegister3(i));
+					instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
+					instructionsTable.setJ(counting, "F"+mainMemory.getRegister2(i));
+					instructionsTable.setK(counting, "F"+mainMemory.getRegister3(i));
 				}
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("L")) {
-				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
-				instructionsTable.setJ(i, ""+mainMemory.getAddressposition(i));
+				instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
+				instructionsTable.setJ(counting, ""+mainMemory.getAddressposition(i));
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("S")) {
-				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
-				instructionsTable.setJ(i, ""+mainMemory.getAddressposition(i));
+				instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
+				instructionsTable.setJ(counting, ""+mainMemory.getAddressposition(i));
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("BNEZ")) {
-				instructionsTable.setDestinationRegister(i, "R"+mainMemory.getJump(i));
-				instructionsTable.setJ(i, mainMemory.getBranch(i));
+				instructionsTable.setDestinationRegister(counting, "R"+mainMemory.getJump(i));
+				instructionsTable.setJ(counting, mainMemory.getBranch(i));
 			}
-			insts[i] = -1;
+			insts[counting] = -1;
 		}
 	}
 	
@@ -285,8 +266,6 @@ public class Main {
 					} else if(operation.startsWith("S")) {
 						result[executed] = registerFile.getContent(reservationStations.getVstore(executed));
 					}
-					instructionsTable.setExecutionComplete(executed, clock);
-					insts[executed]=-2;
 					if(operation.startsWith("BNEZ")) {
 						if(registerFile.getQ(instructionsTable.getDestinationRegister(executed)).equals("0")) {
 							if(registerFile.getContent(instructionsTable.getDestinationRegister(executed)) != 0)
@@ -295,6 +274,9 @@ public class Main {
 							instructionsTable.setExecutionComplete(executed, clock);
 							insts[executed]=-2;
 						}
+					} else {
+						instructionsTable.setExecutionComplete(executed, clock);
+						insts[executed]=-2;
 					}
 				} else {
 					if(insts[executed]!=0) {
@@ -328,6 +310,44 @@ public class Main {
 		reservationStations.setAvailable(written);
 		instructionsTable.setWriteResult(written, clock);
 		write.remove();
+	}
+	
+	public void printQueues() {
+		if(!fetch.isEmpty()) {
+			System.out.print("Fetch Queue: ");
+			for(String value: fetch) {
+				System.out.print(value.split(" ")[1] + "  ");
+			}
+			System.out.println();
+		}
+		if(!issue.isEmpty()) {
+			System.out.print("Issue Queue: ");
+			for(String value: issue) {
+				System.out.print(value.split(" ")[1] + "  ");
+			}
+			System.out.println();
+		}
+		if(!execute.isEmpty()) {
+			System.out.print("Execute Queue: ");
+			for(String value: execute) {
+				System.out.print(value.split(" ")[1] + "  ");
+			}
+			System.out.println();
+		}
+		if(!write.isEmpty()) {
+			System.out.print("Write Queue: ");
+			for(String value: write) {
+				System.out.print(value.split(" ")[1] + "  ");
+			}
+			System.out.println();
+		}
+	}
+	
+	public void print() {
+		mainMemory.toString();
+		reservationStations.toString();
+		registerFile.toString();
+		instructionsTable.toString();
 	}
 	
 	public static void main(String[] args) {
