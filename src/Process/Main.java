@@ -16,6 +16,7 @@ public class Main {
 	static int storespace;
 	int clock;
 	int line;
+	int iterations;
 	int lengthOfArrays;
 	Memory mainMemory;
 	Queue<String> fetch = new LinkedList<String>();
@@ -33,17 +34,19 @@ public class Main {
 	public Main() {
 		clock = 0;
 		line = 0;
+		iterations = 0;
 		mainMemory = new Memory("Instructions");
 		if(mainMemory.isIteration())
 			lengthOfArrays = 1000;
 		else
 			lengthOfArrays = mainMemory.getOperations().length;
-		instructionsTable = new InstructionsTable(lengthOfArrays);
 		insts = new int[lengthOfArrays];
+		for(int i=0;i<lengthOfArrays;i++)
+			insts[i]=-1;
 		result = new int[lengthOfArrays];
 		reservationStations = new ReservationStations(mulspace,addspace,loadspace,storespace);
 		registerFile = new RegisterFile();
-		loadInstructions(0);
+		loadInstructions();
 		stopFetching = false;
 		startFetching = false;
 	}
@@ -55,20 +58,22 @@ public class Main {
 				break;
 			}
 			System.out.println("********************** Clock Cycle: " + clock + " **********************");
+			System.out.println(line);
+			System.out.println(mainMemory.getOperations().length);
 			if(line < mainMemory.getOperations().length) {
-				if(mainMemory.getLabel(line) == null && !stopFetching) {
+				if(!mainMemory.getLabel(line) && !stopFetching) {
 					startFetching = false;
 					fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line);
-					instructionsTable.setIteration(clock);
-					if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ")) {
+					instructionsTable.setIteration(line);
+					if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ"))
 						stopFetching = true;
-					}
-				} else if(mainMemory.getLabel(line) != null) {
+					else
+						line++;
+				} else if(mainMemory.getLabel(line)) {
 					startFetching = true;
-					instructionsTable.incrementIteration();
-					loadInstructions(mainMemory.getOperations().length*instructionsTable.getIter());
+					loadInstructions();
+					line++;
 				}
-				line++;
 			}
 			printQueues();
 			if(!write.isEmpty() && clock>=3) {
@@ -93,36 +98,34 @@ public class Main {
 		System.out.println("************************************************************");
 	}
 	
-	public void loadInstructions(int index) {
-		int counting = index;
+	public void loadInstructions() {
+		instructionsTable = new InstructionsTable(mainMemory.getOperations().length, iterations++);
 		instructionsTable.setInstructions(mainMemory.getOperations());
 		for(int i=0;i<mainMemory.getOperations().length;i++) {
-			counting = index + i;
 			if(mainMemory.getOperationsWithLocation(i).startsWith("MUL") || mainMemory.getOperationsWithLocation(i).startsWith("DIV")){
-				instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
-				instructionsTable.setJ(counting, "F"+mainMemory.getRegister2(i));
-				instructionsTable.setK(counting, "F"+mainMemory.getRegister3(i));
+				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
+				instructionsTable.setJ(i, "F"+mainMemory.getRegister2(i));
+				instructionsTable.setK(i, "F"+mainMemory.getRegister3(i));
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("ADD") || mainMemory.getOperationsWithLocation(i).startsWith("SUB")) {
 				if(mainMemory.getOperationsWithLocation(i).startsWith("ADDI") || mainMemory.getOperationsWithLocation(i).startsWith("SUBI")) {
-					instructionsTable.setDestinationRegister(counting, "R"+mainMemory.getDestination(i));
-					instructionsTable.setJ(counting, "R"+mainMemory.getRegister2(i));
-					instructionsTable.setK(counting, ""+mainMemory.getImm(i));
+					instructionsTable.setDestinationRegister(i, "R"+mainMemory.getDestination(i));
+					instructionsTable.setJ(i, "R"+mainMemory.getRegister2(i));
+					instructionsTable.setK(i, ""+mainMemory.getImm(i));
 				} else {
-					instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
-					instructionsTable.setJ(counting, "F"+mainMemory.getRegister2(i));
-					instructionsTable.setK(counting, "F"+mainMemory.getRegister3(i));
+					instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
+					instructionsTable.setJ(i, "F"+mainMemory.getRegister2(i));
+					instructionsTable.setK(i, "F"+mainMemory.getRegister3(i));
 				}
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("L")) {
-				instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
-				instructionsTable.setJ(counting, ""+mainMemory.getAddressposition(i));
+				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
+				instructionsTable.setJ(i, ""+mainMemory.getAddressposition(i));
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("S")) {
-				instructionsTable.setDestinationRegister(counting, "F"+mainMemory.getDestination(i));
-				instructionsTable.setJ(counting, ""+mainMemory.getAddressposition(i));
+				instructionsTable.setDestinationRegister(i, "F"+mainMemory.getDestination(i));
+				instructionsTable.setJ(i, ""+mainMemory.getAddressposition(i));
 			} else if(mainMemory.getOperationsWithLocation(i).startsWith("BNEZ")) {
-				instructionsTable.setDestinationRegister(counting, "R"+mainMemory.getJump(i));
-				instructionsTable.setJ(counting, mainMemory.getBranch(i));
+				instructionsTable.setDestinationRegister(i, "R"+mainMemory.getJump(i));
+				instructionsTable.setJ(i, mainMemory.getBranch(i));
 			}
-			insts[counting] = -1;
 		}
 	}
 	
@@ -163,11 +166,13 @@ public class Main {
 		} else if(operation.startsWith("L")) {
 			result[executing] = (int)mainMemory.getMemoryWithLocation(reservationStations.getAddressload(executing));
 		} else if(operation.startsWith("S")) {
-			result[executing] = registerFile.getContent(reservationStations.getVstore(executing));
+			result[executing] = registerFile.getContent(instructionsTable.getDestinationRegister(executing));
 		} else if(operation.startsWith("BNEZ")) {
 			if(registerFile.getQ(instructionsTable.getDestinationRegister(executing)).equals("0")) {
 				if(registerFile.getContent(instructionsTable.getDestinationRegister(executing)) != 0)
 					line = mainMemory.getLabelWithString(mainMemory.getBranch(executing));
+				else
+					line++;
 				stopFetching = false;
 			}
 		}
@@ -189,9 +194,15 @@ public class Main {
 		if(value3.equals("0")) {
 			reg3 = instructionsTable.getK(issued);
 		}
+		if(operation.startsWith("S.D")) {
+			value2 = value1;
+			if(value2.equals("0")) {
+				reg2 = destinationRegister;
+			}
+		}
 		reservationStations.setOccupied(operation,reg2,reg3,value2,value3,address,issued);
 		insts[issued] = getInsts(operation);
-		if(value1.equals("0") && !operation.startsWith("L.D") && !operation.startsWith("BNEZ")) {
+		if(value1.equals("0") && !operation.startsWith("S.D") && !operation.startsWith("BNEZ")) {
 			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(issued));
 		}
 		instructionsTable.setIssue(issued, clock);
