@@ -74,10 +74,6 @@ public class Main {
 			}
 			if(!fetch.isEmpty()) {
 				isOccupied();
-				for(String value: issue) {
-					if(fetch.contains(value))
-						fetch.remove(value);
-				}
 			}
 			print();
 			clock++;
@@ -112,7 +108,7 @@ public class Main {
 	
 	public void isOccupied() {
 		if(!reservationStations.isOccupied(fetch.peek()))
-			issue.add(fetch.peek());
+			issue.add(fetch.remove());
 	}
 	public boolean isWaiting(String find) {
 		return reservationStations.isWaiting(Integer.parseInt(find.split(" ")[1]));
@@ -179,6 +175,10 @@ public class Main {
 		String value1 = registerFile.getQ(destinationRegister);
 		String value2 = registerFile.getQ(i.getJ());
 		String value3 = registerFile.getQ(i.getK());
+		if(registerFile.getLine(i.getJ())>index)
+			value2 = "0";
+		if(registerFile.getLine(i.getK())>index)
+			value3 = "0";
 		String reg2 = "";
 		String reg3 = "";
 		int address = mainMemory.getAddressposition(issued);
@@ -196,8 +196,8 @@ public class Main {
 		}
 		i.setCount(getInsts(operation));
 		reservationStations.setOccupied(operation,reg2,reg3,value2,value3,address,issued);
-		if(value1.equals("0") && !operation.startsWith("S.D") && !operation.startsWith("BNEZ")) {
-			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(issued));
+		if(!operation.startsWith("S.D") && !operation.startsWith("BNEZ")) {
+			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(issued), index);
 		}
 		i.setIssue(clock);
 		execute.add(issue.remove());
@@ -243,10 +243,8 @@ public class Main {
 		String registerWrite = i.getDestinationRegister();
 		
 		if(operation.startsWith("MUL") || operation.startsWith("DIV") || operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("L")){
-			if(registerFile.getQ(registerWrite).equals(reservationStations.getTagUsingLine(written)) || registerFile.getQ(registerWrite).equals("0")) {
-				reservationStations.writeWaiting(registerFile.getQ(registerWrite), registerWrite);
-				registerFile.setContent(registerWrite, i.getResult());
-			}
+			reservationStations.writeWaiting(reservationStations.getTagUsingLine(written), registerWrite);
+			registerFile.setContent(registerWrite, i.getResult());
 		} else if(operation.startsWith("S")) {
 			mainMemory.setMemory(reservationStations.getAddressstore(written),i.getResult());
 		}
