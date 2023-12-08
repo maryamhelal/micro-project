@@ -41,10 +41,6 @@ public class Memory {
 			System.out.println("An error occurred.");
 		}
 	}
-
-	public Object[] getMemory() {
-		return Memory;
-	}
 	
 	public Object getMemoryWithLocation(int i) {
 		changed[i] = 1;
@@ -57,17 +53,9 @@ public class Memory {
 	}
 	
 	public void generateMemory() {
-		//Random random = new Random();
-		//int rand;
 		for(int i = 0; i < memorySize; i++) {
-			//rand = random.nextInt(51) + 1;
-			//Memory[i] = rand;
 			Memory[i] = 5;
 		}
-	}
-	
-	public Object[] getRead() {
-		return read;
 	}
 	
 	public Object getReadWithLocation(int i) {
@@ -87,29 +75,25 @@ public class Memory {
 	}
 	
 	public void setOperations() {
-		int c = 0;
 		isIteration = false;
-		for(int i=0;i<read.length;i++) {
-			if(read[i]!=null)
-				c++;
-		}
-		operations = new String[c];
-		destination = new int[c];
-		addressposition = new int[c];
-		register2 = new int[c];
-		register3 = new int[c];
-		imm = new int[c];
-		jump = new int[c];
-		label = new String[c];
-		branch = new String[c];
-		for(int i=0;i<c;i++) {
+		operations = new String[count];
+		destination = new int[count];
+		addressposition = new int[count];
+		register2 = new int[count];
+		register3 = new int[count];
+		imm = new int[count];
+		jump = new int[count];
+		label = new String[count];
+		branch = new String[count];
+		for(int i=0;i<count;i++) {
 			destination[i] = -1;
+			addressposition[i] = -1;
 			register2[i] = -1;
 			register3[i] = -1;
 			imm[i] = -1;
 			jump[i] = -1;
 		}
-		for(int i=0;i<c;i++) {
+		for(int i=0;i<count;i++) {
 			operations[i] = (((String)read[i]).split(" "))[0];
 			if(operations[i].equals("L.D") || operations[i].equals("S.D")) {
 				String result1;
@@ -191,6 +175,9 @@ public class Memory {
 	public String getBranch(int n) {
 		return branch[n];
 	}
+	public boolean isIteration() {
+		return isIteration;
+	}
 	public boolean getLabel(int n) {
 		if(label[n]==null)
 			return false;
@@ -205,9 +192,6 @@ public class Memory {
 		}
 		return -1;
 	}
-	public boolean isIteration() {
-		return isIteration;
-	}
 	
 	public String toString() {
 		System.out.println("------------------------Memory------------------------");
@@ -220,43 +204,51 @@ public class Memory {
 //		System.out.println("---------------------Instructions---------------------");
 //		for(int i=0;i<read.length;i++) {
 //			if(read[i]!=null)
-//				System.out.println(read[i]);
+//				System.out.println(i + ": " + read[i]);
 //		}
 //		System.out.println("---------------------Operations---------------------");
 //		for(int i=0;i<operations.length;i++) {
-//			System.out.println(operations[i]);
+//			System.out.println(i + ": " + operations[i]);
 //		}
 //		System.out.println("------------------Effective Address------------------");
 //		for(int i=0;i<addressposition.length;i++) {
-//			System.out.println(addressposition[i]);
+//			if(addressposition[i]!=-1)
+//				System.out.println(i + ": " + addressposition[i]);
 //		}
 //		System.out.println("---------------------Destination---------------------");
 //		for(int i=0;i<destination.length;i++) {
-//			System.out.println(destination[i]);
+//			if(destination[i]!=-1)
+//				System.out.println(i + ": " + destination[i]);
 //		}
 //		System.out.println("---------------------Register 2---------------------");
 //		for(int i=0;i<register2.length;i++) {
-//			System.out.println(register2[i]);
+//			if(register2[i]!=-1)
+//				System.out.println(i + ": " + register2[i]);
 //		}
 //		System.out.println("---------------------Register 3---------------------");
 //		for(int i=0;i<register3.length;i++) {
-//			System.out.println(register3[i]);
+//			if(register3[i]!=-1)
+//				System.out.println(i + ": " + register3[i]);
 //		}
 //		System.out.println("---------------------Immediate---------------------");
 //		for(int i=0;i<imm.length;i++) {
-//			System.out.println(imm[i]);
+//			if(imm[i]!=-1)
+//				System.out.println(i + ": " + imm[i]);
 //		}
 //		System.out.println("------------------------Jump------------------------");
 //		for(int i=0;i<jump.length;i++) {
-//			System.out.println(jump[i]);
+//			if(jump[i]!=-1)
+//				System.out.println(i + ": " + jump[i]);
 //		}
 //		System.out.println("-----------------------Branch-----------------------");
 //		for(int i=0;i<branch.length;i++) {
-//			System.out.println(branch[i]);
+//			if(branch[i]!=null)
+//				System.out.println(i + ": " + branch[i]);
 //		}
 //		System.out.println("-----------------------Label-----------------------");
 //		for(int i=0;i<label.length;i++) {
-//			System.out.println(label[i]);
+//			if(label[i]!=null)
+//				System.out.println(i + ": " + label[i]);
 //		}
 		return "";
 	}
