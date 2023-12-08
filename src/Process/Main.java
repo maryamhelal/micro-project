@@ -54,17 +54,12 @@ public class Main {
 			if(line < mainMemory.getOperations().length) {
 				if(!mainMemory.getLabel(line) && !stopFetching) {
 					startFetching = false;
-					loadInstruction(line);
-					fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line);
-					if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ"))
-						stopFetching = true;
-					else
-						line++;
+					fetchMethod();
 				} else if(mainMemory.getLabel(line)) {
-					startFetching = true;
 					iterations++;
 					loadInstruction(line);
 					line++;
+					fetchMethod();
 				}
 			}
 			printQueues();
@@ -91,7 +86,7 @@ public class Main {
 		return false;
 	}
 	
-	public void loadInstruction(int line) {
+	public int loadInstruction(int line) {
 		Instruction instruction = new Instruction();
 		String op = mainMemory.getOperationsWithLocation(line);
 		instruction.setIteration(iterations);
@@ -112,6 +107,7 @@ public class Main {
 				instruction.setJ(""+mainMemory.getAddressposition(line));
 		}
 		instructionTable.add(instruction);
+		return instructionTable.lastIndexOf(instruction);
 	}
 	
 	public void isOccupied() {
@@ -135,8 +131,8 @@ public class Main {
 			return storecount;
 		return -1;
 	}
-	public void execution(int executing, String operation) {
-		Instruction i = instructionTable.get(executing);
+	public void execution(int executing, int index, String operation) {
+		Instruction i = instructionTable.get(index);
 		if(operation.startsWith("MUL")) {
 			i.setResult(registerFile.getContent(i.getJ()) * registerFile.getContent(i.getK())) ;
 		} else if(operation.startsWith("DIV")){
@@ -159,6 +155,7 @@ public class Main {
 					line = mainMemory.getLabelWithString(mainMemory.getBranch(executing));
 				} else {
 					line++;
+					System.out.println(line);
 					iterations = 0;
 				}
 				stopFetching = false;
@@ -166,10 +163,18 @@ public class Main {
 		}
 	}
 	
+	public void fetchMethod() {
+		fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line + " " +loadInstruction(line));
+		if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ"))
+			stopFetching = true;
+		else
+			line++;
+	}
 	public void issueMethod() {
 		String operation = (String)issue.peek().split(" ")[0];
 		int issued = Integer.parseInt((String)issue.peek().split(" ")[1]);
-		Instruction i = instructionTable.get(issued);
+		int index = Integer.parseInt((String)issue.peek().split(" ")[2]);
+		Instruction i = instructionTable.get(index);
 		String destinationRegister = i.getDestinationRegister();
 		String value1 = registerFile.getQ(destinationRegister);
 		String value2 = registerFile.getQ(i.getJ());
@@ -194,7 +199,7 @@ public class Main {
 		if(value1.equals("0") && !operation.startsWith("S.D") && !operation.startsWith("BNEZ")) {
 			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(issued));
 		}
-		instructionTable.get(issued).setIssue(clock);
+		i.setIssue(clock);
 		execute.add(issue.remove());
 	}
 	
@@ -202,39 +207,40 @@ public class Main {
 		for(String value: execute) {
 			if(!isWaiting(value)) {
 				int executed = Integer.parseInt(value.split(" ")[1]);
-				Instruction i = instructionTable.get(executed);
+				int index = Integer.parseInt((String)value.split(" ")[2]);
+				Instruction i = instructionTable.get(index);
 				String operation = value.split(" ")[0];
 				if(i.getCount()==getInsts(operation))
 					i.setExecutionStart(clock);
 				if(i.getCount()==0) {
-					execution(executed, operation);
+					execution(executed, index, operation);
 					if(operation.startsWith("BNEZ")) {
 						if(!stopFetching) {
 							i.setExecutionComplete(clock);
-							i.setCount(-2);
+							write.add(value);
+							i.decrementCount();
 						}
 					} else {
 						i.setExecutionComplete(clock);
-						i.setCount(-2);
+						write.add(value);
+						i.decrementCount();
 					}
 				} else
 					i.decrementCount();
 			}
 		}
-		for(int i=0;i<instructionTable.size();i++) {
-			if(instructionTable.get(i).getCount()==-2) {
-				execute.remove(mainMemory.getOperationsWithLocation(i) + " " + i);
-				write.add(mainMemory.getOperationsWithLocation(i) + " " + i);
-				instructionTable.get(i).setCount(-1);
-			}
+		for(String value: write) {
+			if(execute.contains(value))
+				execute.remove(value);
 		}
 	}
 	
 	public void writeMethod() {
 		int written = Integer.parseInt((String)write.peek().split(" ")[1]);
-		Instruction i = instructionTable.get(written);
+		int index = Integer.parseInt((String)write.peek().split(" ")[2]);
+		Instruction i = instructionTable.get(index);
 		String operation = (String)write.peek().split(" ")[0];
-		String registerWrite = instructionTable.get(written).getDestinationRegister();
+		String registerWrite = i.getDestinationRegister();
 		
 		if(operation.startsWith("MUL") || operation.startsWith("DIV") || operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("L")){
 			if(registerFile.getQ(registerWrite).equals(reservationStations.getTagUsingLine(written)) || registerFile.getQ(registerWrite).equals("0")) {
@@ -245,39 +251,36 @@ public class Main {
 			mainMemory.setMemory(reservationStations.getAddressstore(written),i.getResult());
 		}
 		reservationStations.setAvailable(written);
-		instructionTable.get(written).setWriteResult(clock);
+		i.setWriteResult(clock);
 		write.remove();
-		if(i.getCount()==0) {
-			return;
-		}
 	}
 	
 	public void printQueues() {
 		if(!fetch.isEmpty()) {
 			System.out.print("Fetch Queue: ");
 			for(String value: fetch) {
-				System.out.print(value.split(" ")[1] + "  ");
+				System.out.print(value.split(" ")[1] + " ");
 			}
 			System.out.println();
 		}
 		if(!issue.isEmpty()) {
 			System.out.print("Issue Queue: ");
 			for(String value: issue) {
-				System.out.print(value.split(" ")[1] + "  ");
+				System.out.print(value.split(" ")[1] + " ");
 			}
 			System.out.println();
 		}
 		if(!execute.isEmpty()) {
 			System.out.print("Execute Queue: ");
 			for(String value: execute) {
-				System.out.print(value.split(" ")[1] + "  ");
+				System.out.print(value.split(" ")[1] + " ");
 			}
 			System.out.println();
 		}
 		if(!write.isEmpty()) {
 			System.out.print("Write Queue: ");
 			for(String value: write) {
-				System.out.print(value.split(" ")[1] + "  ");
+				System.out.print(value.split(" ")[1] + " ");
 			}
 			System.out.println();
 		}
