@@ -70,17 +70,16 @@ public class RegisterFile {
 	
 	public String toString() {
 		System.out.println("---------------------Register File---------------------");
-		System.out.println("Tag | Qi | Content | Changed");
+		System.out.println("Tag | Qi | Content");
 		for(int i=0;i<tag.length;i++) {
 			if(i==0)
 				System.out.println("-------Floating-point-------");
 			if(i==32)
 				System.out.println("-----------Integer-----------");
-			System.out.print(tag[i] + "  | " + q[i] + " | " + content[i] + " | ");
-			if(changed[i]==0)
-				System.out.println();
+			if(changed[i]!=0)
+				System.out.println(tag[i] + "  | " + q[i] + " | " + content[i] + " --> changed");
 			else
-				System.out.println("changed");
+				System.out.println(tag[i] + "  | " + q[i] + " | " + content[i]);
 		}
 		return "";
 	}
