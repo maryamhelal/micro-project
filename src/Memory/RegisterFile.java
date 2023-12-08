@@ -7,6 +7,7 @@ public class RegisterFile {
 	String[] q;
 	int[] content;
 	int[] changed;
+	int[] line;
 	
 	public RegisterFile() {
 		int n = 64;
@@ -14,9 +15,11 @@ public class RegisterFile {
 		q = new String[n];
 		content = new int[n];
 		changed = new int[n];
+		line = new int[n];
 		for(int i=0;i<n;i++) {
 			q[i] = "0";
 			content[i] = 1;
+			line[i] = -1;
 			if(i<32) {
 				tag[i] = "F"+i;
 			} else {
@@ -36,12 +39,16 @@ public class RegisterFile {
 		}
 		return "0";
 	}
-	public void setQ(String register, String value) {
+	public void setQ(String register, String value, int line) {
 		for(int i=0;i<32;i++) {
-			if(tag[i].equals(register))
+			if(tag[i].equals(register)) {
 				q[i] = value;
-			if(tag[i+32].equals(register) && i!=0)
+				this.line[i] = line;
+			}
+			if(tag[i+32].equals(register) && i!=0) {
 				q[i+32] = value;
+				this.line[i+32] = line;
+			}
 		}
 	}
 	public int getContent(String register) {
@@ -59,13 +66,24 @@ public class RegisterFile {
 				content[i] = val;
 				q[i] = "0";
 				changed[i] = 1;
+				line[i] = -1;
 			}
 			if(tag[i+32].equals(register) && i!=0) {
 				content[i+32] = val;
 				q[i+32] = "0";
 				changed[i+32] = 1;
+				line[i+32] = -1;
 			}
 		}
+	}
+	public int getLine(String register) {
+		for(int i=0;i<32;i++) {
+			if(tag[i].equals(register))
+				return line[i];
+			if(tag[i+32].equals(register))
+				return line[i+32];
+		}
+		return -1;
 	}
 	
 	public String toString() {
