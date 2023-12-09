@@ -174,20 +174,18 @@ public class Main {
 		String reg2 = "";
 		String reg3 = "";
 		int address = mainMemory.getAddressposition(issued);
+		if(registerFile.getLine(i.getJ())>index)
+			value2 = "0";
+		if(registerFile.getLine(i.getK())>index)
+			value3 = "0";
 		if(value2.equals("0")) {
 			reg2 = ""+registerFile.getContent(i.getJ());
-		} else {
-			if(registerFile.getLine(i.getJ())>index)
-				value2 = "0";
 		}
 		if(value3.equals("0")) {
 			if(operation.startsWith("ADDI") || operation.startsWith("SUBI"))
-				reg3 = ""+mainMemory.getImm(issued);
+				reg3 = i.getK();
 			else
 				reg3 = ""+registerFile.getContent(i.getK());
-		} else {
-			if(registerFile.getLine(i.getK())>index)
-				value3 = "0";
 		}
 		if(operation.startsWith("S.D")) {
 			value2 = value1;
