@@ -116,11 +116,17 @@ public class ReservationStations {
 		}
 	}
 
-	public String getVjmul(int line) {
-		return vjmul[getIndexUsingLine(line)];
+	public int getVjmul(int line) {
+		if(vjmul[getIndexUsingLine(line)].equals(""))
+			return 0;
+		else
+			return Integer.parseInt(vjmul[getIndexUsingLine(line)]);
 	}
-	public String getVkmul(int line) {
-		return vkmul[getIndexUsingLine(line)];
+	public int getVkmul(int line) {
+		if(vkmul[getIndexUsingLine(line)].equals(""))
+			return 0;
+		else
+			return Integer.parseInt(vkmul[getIndexUsingLine(line)]);
 	}
 	public String getQjmul(int line) {
 		return qjmul[getIndexUsingLine(line)];
@@ -129,11 +135,17 @@ public class ReservationStations {
 		return qkmul[getIndexUsingLine(line)];
 	}
 	
-	public String getVjadd(int line) {
-		return vjadd[getIndexUsingLine(line)];
+	public int getVjadd(int line) {
+		if(vjadd[getIndexUsingLine(line)].equals(""))
+			return 0;
+		else
+			return Integer.parseInt(vjadd[getIndexUsingLine(line)]);
 	}
-	public String getVkadd(int line) {
-		return vkadd[getIndexUsingLine(line)];
+	public int getVkadd(int line) {
+		if(vkadd[getIndexUsingLine(line)].equals(""))
+			return 0;
+		else
+			return Integer.parseInt(vkadd[getIndexUsingLine(line)]);
 	}
 	public String getQjadd(int line) {
 		return qjadd[getIndexUsingLine(line)];
@@ -149,8 +161,11 @@ public class ReservationStations {
 	public int getAddressstore(int line) {
 		return addressstore[getIndexUsingLine(line)];
 	}
-	public String getVstore(int line) {
-		return vstore[getIndexUsingLine(line)];
+	public int getVstore(int line) {
+		if(vstore[getIndexUsingLine(line)].equals(""))
+			return 0;
+		else
+			return Integer.parseInt(vstore[getIndexUsingLine(line)]);
 	}
 	public String getQstore(int line) {
 		return qstore[getIndexUsingLine(line)];
@@ -213,30 +228,30 @@ public class ReservationStations {
 		}
 	}
 	
-	public void writeWaiting(String tagdestination, String register) {
+	public void writeWaiting(String tagdestination, String value) {
 		for(int i=0;i<qjmul.length;i++) {
 			if(qjmul[i].equals(tagdestination)) {
-				vjmul[i] = register;
+				vjmul[i] = value;
 				qjmul[i] = "0";
 			}
 			if(qkmul[i].equals(tagdestination)) {
-				vkmul[i] = register;
+				vkmul[i] = value;
 				qkmul[i] = "0";
 			}
 		}
 		for(int i=0;i<qjadd.length;i++) {
 			if(qjadd[i].equals(tagdestination)) {
-				vjadd[i] = register;
+				vjadd[i] = value;
 				qjadd[i] = "0";
 			}
 			if(qkadd[i].equals(tagdestination)) {
-				vkadd[i] = register;
+				vkadd[i] = value;
 				qkadd[i] = "0";
 			}
 		}
 		for(int i=0;i<qstore.length;i++) {
 			if(qstore[i].equals(tagdestination)) {
-				vstore[i] = register;
+				vstore[i] = value;
 				qstore[i] = "0";
 			}
 		}
@@ -406,5 +421,4 @@ public class ReservationStations {
 		}
 		return "";
 	}
-	
 }
