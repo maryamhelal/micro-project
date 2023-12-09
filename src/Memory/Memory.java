@@ -8,6 +8,11 @@ import java.io.IOException;
 public class Memory {
 	int memorySize = 500;
 	Object[] Memory = new Object[memorySize];
+
+	public int[] getChanged() {
+		return changed;
+	}
+
 	int[] changed = new int[memorySize];
 	Object[] read = new Object[100];
 	String[] operations;
@@ -192,7 +197,11 @@ public class Memory {
 		}
 		return -1;
 	}
-	
+
+	public Object[] getMemory() {
+		return Memory;
+	}
+
 	public String toString() {
 		System.out.println("------------------------Memory------------------------");
 		for(int i=0;i<Memory.length;i++) {
