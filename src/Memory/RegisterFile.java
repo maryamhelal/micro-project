@@ -101,4 +101,16 @@ public class RegisterFile {
 		}
 		return "";
 	}
+
+	public String[] getTag() {
+		return tag;
+	}
+
+	public String[] getQ() {
+		return q;
+	}
+
+	public int[] getContent() {
+		return content;
+	}
 }

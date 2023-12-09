@@ -32,7 +32,95 @@ public class ReservationStations {
 	String[] vstore;
 	String[] qstore;
 	int[] linestore;
-	
+
+	public String[] getTagmul() {
+		return tagmul;
+	}
+
+	public int[] getBusymul() {
+		return busymul;
+	}
+
+	public String[] getOpmul() {
+		return opmul;
+	}
+
+	public String[] getVjmul() {
+		return vjmul;
+	}
+
+	public String[] getVkmul() {
+		return vkmul;
+	}
+
+	public String[] getQjmul() {
+		return qjmul;
+	}
+
+	public String[] getQkmul() {
+		return qkmul;
+	}
+
+	public String[] getTagadd() {
+		return tagadd;
+	}
+
+	public int[] getBusyadd() {
+		return busyadd;
+	}
+
+	public String[] getOpadd() {
+		return opadd;
+	}
+
+	public String[] getVjadd() {
+		return vjadd;
+	}
+
+	public String[] getVkadd() {
+		return vkadd;
+	}
+
+	public String[] getQjadd() {
+		return qjadd;
+	}
+
+	public String[] getQkadd() {
+		return qkadd;
+	}
+
+	public String[] getTagload() {
+		return tagload;
+	}
+
+	public int[] getBusyload() {
+		return busyload;
+	}
+
+	public int[] getAddressload() {
+		return addressload;
+	}
+
+	public String[] getTagstore() {
+		return tagstore;
+	}
+
+	public int[] getBusystore() {
+		return busystore;
+	}
+
+	public int[] getAddressstore() {
+		return addressstore;
+	}
+
+	public String[] getVstore() {
+		return vstore;
+	}
+
+	public String[] getQstore() {
+		return qstore;
+	}
+
 	public ReservationStations(int mul, int add, int load, int store) {
 		Mul(mul);
 		Add(add);

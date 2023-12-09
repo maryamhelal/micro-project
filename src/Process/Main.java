@@ -1,10 +1,15 @@
 package Process;
 
 //import java.util.Scanner;
-import java.util.LinkedList;
+
+import Memory.Instruction;
+import Memory.Memory;
+import Memory.RegisterFile;
+import Memory.ReservationStations;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
-import Memory.*;
 
 public class Main {
 	static int mulcount;
@@ -16,6 +21,8 @@ public class Main {
 	static int loadspace;
 	static int storespace;
 	int clock;
+
+
 	int line;
 	int iterations;
 	Memory mainMemory;
@@ -23,13 +30,53 @@ public class Main {
 	Queue<String> issue = new LinkedList<String>();
 	Queue<String> execute = new LinkedList<String>();
 	Queue<String> write = new LinkedList<String>();
+
+
 	ReservationStations reservationStations;
 	RegisterFile registerFile;
 	boolean stopFetching;
 	boolean startFetching;
+
+	public Queue<String> getFetch() {
+		return fetch;
+	}
+
+	public Queue<String> getIssue() {
+		return issue;
+	}
+
+	public Queue<String> getExecute() {
+		return execute;
+	}
+
+	public Queue<String> getWrite() {
+		return write;
+	}
+
+	public ArrayList<Instruction> getInstructionTable() {
+		return instructionTable;
+	}
+
+	public Memory getMainMemory() {
+		return mainMemory;
+	}
+
 	ArrayList<Instruction> instructionTable = new ArrayList<>();
-	
+	public int getClock() {
+		return clock;
+	}
+	public ReservationStations getReservationStations() {
+		return reservationStations;
+	}
 	public Main() {
+		mulspace = 2;
+		addspace = 3;
+		loadspace = 3;
+		storespace = 3;
+		mulcount = 8;
+		addcount = 3;
+		loadcount = 2;
+		storecount = 2;
 		clock = 0;
 		line = 0;
 		iterations = 0;
@@ -44,6 +91,11 @@ public class Main {
 			System.out.println("************************************************************");
 		}
 	}
+
+	public RegisterFile getRegisterFile() {
+		return registerFile;
+	}
+
 	public boolean runOne() {
 		if(clock==1000) {
 			System.out.println("Timed out");
@@ -75,13 +127,15 @@ public class Main {
 			if(!fetch.isEmpty()) {
 				isOccupied();
 			}
+			System.out.println("test");
 			print();
 			clock++;
 			return true;
 		}
+		clock-=clock;
 		return false;
 	}
-	
+
 	public int loadInstruction(int line) {
 		Instruction instruction = new Instruction();
 		String op = mainMemory.getOperationsWithLocation(line);
@@ -105,7 +159,7 @@ public class Main {
 		instructionTable.add(instruction);
 		return instructionTable.lastIndexOf(instruction);
 	}
-	
+
 	public void isOccupied() {
 		if(!reservationStations.isOccupied(fetch.peek()))
 			issue.add(fetch.remove());
@@ -154,7 +208,7 @@ public class Main {
 			}
 		}
 	}
-	
+
 	public void fetchMethod() {
 		fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line + " " +loadInstruction(line));
 		if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ"))
@@ -201,7 +255,7 @@ public class Main {
 		i.setIssue(clock);
 		execute.add(issue.remove());
 	}
-	
+
 	public void executeMethod() {
 		for(String value: execute) {
 			if(!isWaiting(value)) {
@@ -233,14 +287,14 @@ public class Main {
 				execute.remove(value);
 		}
 	}
-	
+
 	public void writeMethod() {
 		int written = Integer.parseInt((String)write.peek().split(" ")[1]);
 		int index = Integer.parseInt((String)write.peek().split(" ")[2]);
 		Instruction i = instructionTable.get(index);
 		String operation = (String)write.peek().split(" ")[0];
 		String registerWrite = i.getDestinationRegister();
-		
+
 		if(operation.startsWith("MUL") || operation.startsWith("DIV") || operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("L")){
 			reservationStations.writeWaiting(reservationStations.getTagUsingLine(index), ""+i.getResult());
 			if(reservationStations.getTagUsingLine(index)==registerFile.getQ(registerWrite))
@@ -252,7 +306,7 @@ public class Main {
 		i.setWriteResult(clock);
 		write.remove();
 	}
-	
+
 	public void printQueues() {
 		if(!fetch.isEmpty()) {
 			System.out.print("Fetch Queue: ");
@@ -283,7 +337,7 @@ public class Main {
 			System.out.println();
 		}
 	}
-	
+
 	public void print() {
 		mainMemory.toString();
 		reservationStations.toString();
@@ -294,7 +348,7 @@ public class Main {
 			i.getOneInstruction();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 //		Scanner obj = new Scanner(System.in);
 //		System.out.println("Enter size of mul reservation station");
@@ -316,15 +370,8 @@ public class Main {
 //		System.out.println(mulspace + " " + addspace + " " + loadspace + " " + storespace);
 //		System.out.println(mulcount + " " + addcount + " " + loadcount + " " + storecount);
 //		obj.close();
-		mulspace = 2;
-		addspace = 3;
-		loadspace = 3;
-		storespace = 3;
-		mulcount = 8;
-		addcount = 3;
-		loadcount = 2;
-		storecount = 2;
-		Main main = new Main();
-		main.run();
+
+		//Main main = new Main();
+		//main.run();
 	}
 }
