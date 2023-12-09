@@ -111,7 +111,7 @@ public class Main {
 			issue.add(fetch.remove());
 	}
 	public boolean isWaiting(String find) {
-		return reservationStations.isWaiting(Integer.parseInt(find.split(" ")[1]));
+		return reservationStations.isWaiting(Integer.parseInt(find.split(" ")[2]));
 	}
 	public int getInsts(String operation) {
 		if(operation.startsWith("ADDI") || operation.startsWith("BNEZ"))
@@ -130,21 +130,17 @@ public class Main {
 	public void execution(int executing, int index, String operation) {
 		Instruction i = instructionTable.get(index);
 		if(operation.startsWith("MUL")) {
-			i.setResult(registerFile.getContent(i.getJ()) * registerFile.getContent(i.getK())) ;
+			i.setResult(reservationStations.getVjmul(index) * reservationStations.getVkmul(index));
 		} else if(operation.startsWith("DIV")){
-			i.setResult(registerFile.getContent(i.getJ()) / registerFile.getContent(i.getK()));
-		} else if(operation.startsWith("ADDI")) {
-			i.setResult(registerFile.getContent(i.getJ()) + mainMemory.getImm(executing));
-		} else if(operation.startsWith("SUBI")) {
-			i.setResult(registerFile.getContent(i.getJ()) - mainMemory.getImm(executing));
+			i.setResult(reservationStations.getVjmul(index) / reservationStations.getVkmul(index));
 		} else if(operation.startsWith("ADD")) {
-			i.setResult(registerFile.getContent(i.getJ()) + registerFile.getContent(i.getK()));
+			i.setResult(reservationStations.getVjadd(index) + reservationStations.getVkadd(index));
 		} else if(operation.startsWith("SUB")) {
-			i.setResult(registerFile.getContent(i.getJ()) - registerFile.getContent(i.getK()));
+			i.setResult(reservationStations.getVjadd(index) - reservationStations.getVkadd(index));
 		} else if(operation.startsWith("L")) {
-			i.setResult((int)mainMemory.getMemoryWithLocation(reservationStations.getAddressload(executing)));
+			i.setResult((int)mainMemory.getMemoryWithLocation(reservationStations.getAddressload(index)));
 		} else if(operation.startsWith("S")) {
-			i.setResult(registerFile.getContent(i.getDestinationRegister()));
+			i.setResult(reservationStations.getVstore(index));
 		} else if(operation.startsWith("BNEZ")) {
 			if(registerFile.getQ(i.getDestinationRegister()).equals("0")) {
 				if(registerFile.getContent(i.getDestinationRegister()) != 0) {
@@ -175,29 +171,34 @@ public class Main {
 		String value1 = registerFile.getQ(destinationRegister);
 		String value2 = registerFile.getQ(i.getJ());
 		String value3 = registerFile.getQ(i.getK());
-		if(registerFile.getLine(i.getJ())>index)
-			value2 = "0";
-		if(registerFile.getLine(i.getK())>index)
-			value3 = "0";
 		String reg2 = "";
 		String reg3 = "";
 		int address = mainMemory.getAddressposition(issued);
 		if(value2.equals("0")) {
-			reg2 = i.getJ();
+			reg2 = ""+registerFile.getContent(i.getJ());
+		} else {
+			if(registerFile.getLine(i.getJ())>index)
+				value2 = "0";
 		}
 		if(value3.equals("0")) {
-			reg3 = i.getK();
+			if(operation.startsWith("ADDI") || operation.startsWith("SUBI"))
+				reg3 = ""+mainMemory.getImm(issued);
+			else
+				reg3 = ""+registerFile.getContent(i.getK());
+		} else {
+			if(registerFile.getLine(i.getK())>index)
+				value3 = "0";
 		}
 		if(operation.startsWith("S.D")) {
 			value2 = value1;
 			if(value2.equals("0")) {
-				reg2 = destinationRegister;
+				reg2 = ""+registerFile.getContent(destinationRegister);
 			}
 		}
 		i.setCount(getInsts(operation));
-		reservationStations.setOccupied(operation,reg2,reg3,value2,value3,address,issued);
+		reservationStations.setOccupied(operation,reg2,reg3,value2,value3,address,index);
 		if(!operation.startsWith("S.D") && !operation.startsWith("BNEZ")) {
-			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(issued), index);
+			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(index), index);
 		}
 		i.setIssue(clock);
 		execute.add(issue.remove());
@@ -243,12 +244,13 @@ public class Main {
 		String registerWrite = i.getDestinationRegister();
 		
 		if(operation.startsWith("MUL") || operation.startsWith("DIV") || operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("L")){
-			reservationStations.writeWaiting(reservationStations.getTagUsingLine(written), registerWrite);
-			registerFile.setContent(registerWrite, i.getResult());
+			reservationStations.writeWaiting(reservationStations.getTagUsingLine(index), ""+i.getResult());
+			if(reservationStations.getTagUsingLine(index)==registerFile.getQ(registerWrite))
+				registerFile.setContent(registerWrite, i.getResult());
 		} else if(operation.startsWith("S")) {
-			mainMemory.setMemory(reservationStations.getAddressstore(written),i.getResult());
+			mainMemory.setMemory(reservationStations.getAddressstore(index),i.getResult());
 		}
-		reservationStations.setAvailable(written);
+		reservationStations.setAvailable(index);
 		i.setWriteResult(clock);
 		write.remove();
 	}
