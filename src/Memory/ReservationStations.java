@@ -293,14 +293,14 @@ public class ReservationStations {
 	
 	public boolean isOccupied(String operation) {
 		int n = -1;
-		if(operation.startsWith("MUL") || operation.startsWith("DIV"))
+		if(operation.contains("MUL") || operation.contains("DIV"))
 			for(int i = 0;i < tagmul.length; i++) {
 				if(busymul[i]==0) {
 					n=i;
 					break;
 				}
 			}
-		else if(operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("BNEZ"))
+		else if(operation.contains("ADD") || operation.contains("SUB") || operation.startsWith("BNEZ"))
 			for(int i = 0; i < tagadd.length; i++) {
 				if(busyadd[i]==0) {
 					n=i;
@@ -328,7 +328,7 @@ public class ReservationStations {
 	}
 	public void setOccupied(String op, String vj, String vk, String qj, String qk, int address, int line) {
 		int n = -1;
-		if(op.startsWith("MUL") || op.startsWith("DIV")) {
+		if(op.contains("MUL") || op.contains("DIV")) {
 			for(int i = 0;i < tagmul.length; i++) {
 				if(busymul[i]==0) {
 					n=i;
@@ -343,7 +343,7 @@ public class ReservationStations {
 			qkmul[n] = qk;
 			addressmul[n] = address;
 			linemul[n] = line;
-		} else if(op.startsWith("ADD") || op.startsWith("SUB") || op.startsWith("BNEZ")){
+		} else if(op.contains("ADD") || op.contains("SUB") || op.startsWith("BNEZ")){
 			for(int i = 0;i < tagadd.length; i++) {
 				if(busyadd[i]==0) {
 					n=i;

@@ -134,7 +134,7 @@ public class Memory {
 		}
 		for(int i=0;i<count;i++) {
 			operations[i] = (((String)read[i]).split(" "))[0];
-			if(operations[i].equals("L.D") || operations[i].equals("S.D")) {
+			if(operations[i].startsWith("L.") || operations[i].startsWith("S.")) {
 				String result1;
 				String result2;
 				result1 = (((String)read[i]).split(" "))[1];
@@ -150,40 +150,6 @@ public class Memory {
 					}
 				}
 				addressposition[i] = Integer.parseInt(result2);
-			} else if(operations[i].equals("ADD.D") || operations[i].equals("SUB.D") || operations[i].equals("MUL.D") || operations[i].equals("DIV.D")){
-				String result1;
-				String result2;
-				String result3;
-				result1 = ((((String)read[i]).split(" "))[1]).split(",")[0];
-				result2 = (((String)read[i]).split(","))[1];
-				result3 = (((String)read[i]).split(","))[2];
-				for(int j = 0;j<32;j++) {
-					if(result1.equals("F"+j)) {
-						destination[i] = j;
-						registerName[i] = "F";
-					}
-					if(result2.equals("F"+j))
-						register2[i] = j;
-					if(result3.equals("F"+j))
-						register3[i] = j;
-				}
-			} else if(operations[i].equals("DADD") || operations[i].equals("DSUB") || operations[i].equals("DMUL") || operations[i].equals("DDIV")) {
-				String result1;
-				String result2;
-				String result3;
-				result1 = ((((String)read[i]).split(" "))[1]).split(",")[0];
-				result2 = (((String)read[i]).split(","))[1];
-				result3 = (((String)read[i]).split(","))[2];
-				for(int j = 0;j<32;j++) {
-					if(result1.equals("R"+j)) {
-						destination[i] = j;
-						registerName[i] = "R";
-					}
-					if(result2.equals("R"+j))
-						register2[i] = j;
-					if(result3.equals("R"+j))
-						register3[i] = j;
-				}
 			} else if(operations[i].equals("ADDI") || operations[i].equals("SUBI")) {
 				String result1;
 				String result2;
@@ -200,20 +166,6 @@ public class Memory {
 						register2[i] = j;
 				}
 				imm[i]=Integer.parseInt(result3);
-			} else if(operations[i].equals("BNEZ")) {
-				String result;
-				result = ((((String)read[i]).split(" "))[1]).split(",")[0];
-				for(int j = 0;j<32;j++) {
-					if(result.equals("F"+j)) {
-						jump[i] = j;
-						registerName[i] = "F";
-					}
-					if(result.equals("R"+j)) {
-						jump[i] = j;
-						registerName[i] = "R";
-					}
-				}
-				branch[i] = (((String)read[i]).split(","))[1];
 			} else if(operations[i].contains("ADD") || operations[i].contains("SUB") || operations[i].contains("MUL") || operations[i].contains("DIV")) {
 				String result1;
 				String result2;
@@ -239,6 +191,20 @@ public class Memory {
 					if(result3.equals("R"+j))
 						register3[i] = j;
 				}
+			} else if(operations[i].equals("BNEZ")) {
+				String result;
+				result = ((((String)read[i]).split(" "))[1]).split(",")[0];
+				for(int j = 0;j<32;j++) {
+					if(result.equals("F"+j)) {
+						jump[i] = j;
+						registerName[i] = "F";
+					}
+					if(result.equals("R"+j)) {
+						jump[i] = j;
+						registerName[i] = "R";
+					}
+				}
+				branch[i] = (((String)read[i]).split(","))[1];
 			} else {
 				label[i] = (String)read[i];
 			}
