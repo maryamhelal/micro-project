@@ -1,12 +1,7 @@
 package Process;
 
-//import java.util.Scanner;
-
-import Memory.Instruction;
-import Memory.Memory;
-import Memory.RegisterFile;
-import Memory.ReservationStations;
-
+import java.util.Scanner;
+import Memory.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -37,15 +32,8 @@ public class Main {
 	boolean stopFetching;
 	boolean startFetching;
 	
-	public Main() {
-		mulspace = 2;
-		addspace = 3;
-		loadspace = 3;
-		storespace = 3;
-		mulcount = 8;
-		addcount = 3;
-		loadcount = 2;
-		storecount = 2;
+	public Main(int[] input) {
+		setInput(input);
 		clock = 0;
 		line = 0;
 		iterations = 0;
@@ -56,6 +44,16 @@ public class Main {
 		startFetching = false;
 	}
 
+	public void setInput(int[] values) {
+		mulspace = values[0];
+		addspace = values[1];
+		loadspace = values[2];
+		storespace = values[3];
+		mulcount = values[4];
+		addcount = values[5];
+		loadcount = values[6];
+		storecount = values[7];
+	}
 	public String getFetchQueue() {
 		return fetchresult;
 	}
@@ -253,7 +251,7 @@ public class Main {
 			reg2 = ""+registerFile.getContent(i.getJ());
 		}
 		if(value3.equals("0")) {
-			if(operation.startsWith("ADDI") || operation.startsWith("SUBI"))
+			if(operation.startsWith("ADDI") || operation.startsWith("SUBI") || operation.startsWith("BNEZ"))
 				reg3 = i.getK();
 			else
 				reg3 = ""+registerFile.getContent(i.getK());
@@ -365,28 +363,29 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+//		int[] inputvalues = new int[8];
 //		Scanner obj = new Scanner(System.in);
 //		System.out.println("Enter size of mul reservation station");
-//		mulspace = Integer.parseInt(obj.nextLine());
+//		inputvalues[0] = Integer.parseInt(obj.nextLine());
 //		System.out.println("Enter size of add reservation station");
-//		addspace = Integer.parseInt(obj.nextLine());
+//		inputvalues[1] = Integer.parseInt(obj.nextLine());
 //		System.out.println("Enter size of load reservation station");
-//		loadspace = Integer.parseInt(obj.nextLine());
+//		inputvalues[2] = Integer.parseInt(obj.nextLine());
 //		System.out.println("Enter size of store reservation station");
-//		storespace = Integer.parseInt(obj.nextLine());
+//		inputvalues[3] = Integer.parseInt(obj.nextLine());
 //		System.out.println("Enter size of mul cycles");
-//		mulcount = Integer.parseInt(obj.nextLine());
+//		inputvalues[4] = Integer.parseInt(obj.nextLine());
 //		System.out.println("Enter size of add cycles");
-//		addcount = Integer.parseInt(obj.nextLine());
+//		inputvalues[5] = Integer.parseInt(obj.nextLine());
 //		System.out.println("Enter size of load cycles");
-//		loadcount = Integer.parseInt(obj.nextLine());
+//		inputvalues[6] = Integer.parseInt(obj.nextLine());
 //		System.out.println("Enter size of store cycles");
-//		storecount= Integer.parseInt(obj.nextLine());
+//		inputvalues[7]= Integer.parseInt(obj.nextLine());
 //		System.out.println(mulspace + " " + addspace + " " + loadspace + " " + storespace);
 //		System.out.println(mulcount + " " + addcount + " " + loadcount + " " + storecount);
 //		obj.close();
-
-		Main main = new Main();
+		int[] inputvalues = {2,3,3,3,8,3,2,2};
+		Main main = new Main(inputvalues);
 		main.run();
 	}
 }
