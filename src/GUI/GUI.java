@@ -2,8 +2,6 @@ package GUI;
 
 import Memory.Instruction;
 import Process.Main;
-
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -14,9 +12,6 @@ import java.util.ArrayList;
 
 public class GUI {
 
-
-    private JTable table1;
-
     private static void centerAlignAllTables(JTable table) {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -24,7 +19,6 @@ public class GUI {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
-
     private static int findRowIndex(DefaultTableModel model, int address) {
         for (int row = 0; row < model.getRowCount(); row++) {
             if ((int) model.getValueAt(row, 0) == address) {
@@ -46,10 +40,11 @@ public class GUI {
     	inputValues[6] =  JOptionPane.showInputDialog("Enter size of load cycles");
     	inputValues[7] =  JOptionPane.showInputDialog("Enter size of store cycles");
         for (int i = 0; i < 8; i++) {
-        	if(inputValues[i]==null)
-        		inputvalues[i] = 3;
-        	else
+        	try {
         		inputvalues[i] = Integer.parseInt(inputValues[i]);
+        	} catch(NumberFormatException e) {
+        		inputvalues[i] = 3;
+        	}	
         }
 //        int[] inputvalues = {2,3,3,3,8,3,2,2};
         Main main = new Main(inputvalues);
@@ -225,7 +220,6 @@ public class GUI {
                     if (main.getMainMemory().getChanged()[i] == 1) {
                         Object[] row = {i, Memory[i]};
                         int rowIndex = findRowIndex(model, i);
-
                         if (rowIndex == -1) {
                             // Address not found in the table, add a new row
                             model.addRow(row);
@@ -253,8 +247,6 @@ public class GUI {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-
     }
 
     private static JPanel createTablePanel(JTable table, String title) {
@@ -263,20 +255,16 @@ public class GUI {
         tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
         return tablePanel;
     }
-
     private static JTable createTable(String... columnNames) {
         // Create table model
         DefaultTableModel model = new DefaultTableModel();
         for (String columnName : columnNames) {
             model.addColumn(columnName);
         }
-
         // Create table with the model
         JTable table = new JTable(model);
-
         // Optionally, set column widths, row heights, etc.
         table.getColumnModel().getColumn(0).setPreferredWidth(50);
-
         return table;
     }
 }

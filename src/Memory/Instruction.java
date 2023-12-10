@@ -1,7 +1,7 @@
 package Memory;
 
 public class Instruction {
-	int iteration;
+	String iteration;
 	String instruction;
 	String destinationRegister;
 	String j;
@@ -13,7 +13,7 @@ public class Instruction {
 	int count;
 	
 	public Instruction() {
-		iteration = 0;
+		iteration = "";
 		instruction = "";
 		destinationRegister = "";
 		j = "";
@@ -25,11 +25,14 @@ public class Instruction {
 		count = -1;
 	}
 
-	public int getIteration() {
-		return iteration;
+	public String getIteration() {
+		if(iteration.equals("0"))
+			return "";
+		else
+			return iteration;
 	}
 	public void setIteration(int value) {
-		iteration = value;
+		iteration = ""+value;
 	}
 	public String getInstruction() {
 		return instruction;
@@ -99,7 +102,7 @@ public class Instruction {
 	}
 	
 	public String getOneInstruction() {
-		String value = iteration + " | " + instruction + " | " + destinationRegister + " | " + j + " | " + k + " | ";
+		String value = getIteration() + " | " + instruction + " | " + destinationRegister + " | " + j + " | " + k + " | ";
 		if(issue!=-1)
 			value+= issue + " | " + executionComplete + " | ";
 		else
