@@ -32,100 +32,93 @@ public class ReservationStations {
 	String[] vstore;
 	String[] qstore;
 	int[] linestore;
-
-	public String[] getTagmul() {
-		return tagmul;
-	}
-
-	public int[] getBusymul() {
-		return busymul;
-	}
-
-	public String[] getOpmul() {
-		return opmul;
-	}
-
-	public String[] getVjmul() {
-		return vjmul;
-	}
-
-	public String[] getVkmul() {
-		return vkmul;
-	}
-
-	public String[] getQjmul() {
-		return qjmul;
-	}
-
-	public String[] getQkmul() {
-		return qkmul;
-	}
-
-	public String[] getTagadd() {
-		return tagadd;
-	}
-
-	public int[] getBusyadd() {
-		return busyadd;
-	}
-
-	public String[] getOpadd() {
-		return opadd;
-	}
-
-	public String[] getVjadd() {
-		return vjadd;
-	}
-
-	public String[] getVkadd() {
-		return vkadd;
-	}
-
-	public String[] getQjadd() {
-		return qjadd;
-	}
-
-	public String[] getQkadd() {
-		return qkadd;
-	}
-
-	public String[] getTagload() {
-		return tagload;
-	}
-
-	public int[] getBusyload() {
-		return busyload;
-	}
-
-	public int[] getAddressload() {
-		return addressload;
-	}
-
-	public String[] getTagstore() {
-		return tagstore;
-	}
-
-	public int[] getBusystore() {
-		return busystore;
-	}
-
-	public int[] getAddressstore() {
-		return addressstore;
-	}
-
-	public String[] getVstore() {
-		return vstore;
-	}
-
-	public String[] getQstore() {
-		return qstore;
-	}
-
+	
 	public ReservationStations(int mul, int add, int load, int store) {
 		Mul(mul);
 		Add(add);
 		Load(load);
 		Store(store);
+	}
+
+	public String[] getTagmul() {
+		return tagmul;
+	}
+	public int[] getBusymul() {
+		return busymul;
+	}
+	public String[] getOpmul() {
+		return opmul;
+	}
+	public String[] getVjmul() {
+		return vjmul;
+	}
+	public String[] getVkmul() {
+		return vkmul;
+	}
+	public String[] getQjmul() {
+		return qjmul;
+	}
+	public String[] getQkmul() {
+		return qkmul;
+	}
+	public String[] getTagadd() {
+		return tagadd;
+	}
+	public int[] getBusyadd() {
+		return busyadd;
+	}
+	public String[] getOpadd() {
+		return opadd;
+	}
+	public String[] getVjadd() {
+		return vjadd;
+	}
+	public String[] getVkadd() {
+		return vkadd;
+	}
+	public String[] getQjadd() {
+		return qjadd;
+	}
+	public String[] getQkadd() {
+		return qkadd;
+	}
+	public String[] getTagload() {
+		return tagload;
+	}
+	public int[] getBusyload() {
+		return busyload;
+	}
+	public String[] getAddressload() {
+		String[] result = new String[addressload.length];
+		for(int i=0;i<addressload.length;i++) {
+			if(addressload[i]==-1)
+				result[i] = "";
+			else
+				result[i] = ""+addressload[i];
+		}
+		return result;
+	}
+	public String[] getTagstore() {
+		return tagstore;
+	}
+	public int[] getBusystore() {
+		return busystore;
+	}
+	public String[] getAddressstore() {
+		String[] result = new String[addressstore.length];
+		for(int i=0;i<addressstore.length;i++) {
+			if(addressstore[i]==-1)
+				result[i] = "";
+			else
+				result[i] = ""+addressstore[i];
+		}
+		return result;
+	}
+	public String[] getVstore() {
+		return vstore;
+	}
+	public String[] getQstore() {
+		return qstore;
 	}
 	
 	public void Mul(int n) {

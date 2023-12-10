@@ -21,53 +21,22 @@ public class Main {
 	static int loadspace;
 	static int storespace;
 	int clock;
-
-
 	int line;
 	int iterations;
 	Memory mainMemory;
+	String fetchresult = "";
+	String issueresult = "";
+	String executeresult = "";
+	String writeresult = "";
 	Queue<String> fetch = new LinkedList<String>();
 	Queue<String> issue = new LinkedList<String>();
 	Queue<String> execute = new LinkedList<String>();
 	Queue<String> write = new LinkedList<String>();
-
-
 	ReservationStations reservationStations;
 	RegisterFile registerFile;
 	boolean stopFetching;
 	boolean startFetching;
-
-	public Queue<String> getFetch() {
-		return fetch;
-	}
-
-	public Queue<String> getIssue() {
-		return issue;
-	}
-
-	public Queue<String> getExecute() {
-		return execute;
-	}
-
-	public Queue<String> getWrite() {
-		return write;
-	}
-
-	public ArrayList<Instruction> getInstructionTable() {
-		return instructionTable;
-	}
-
-	public Memory getMainMemory() {
-		return mainMemory;
-	}
-
-	ArrayList<Instruction> instructionTable = new ArrayList<>();
-	public int getClock() {
-		return clock;
-	}
-	public ReservationStations getReservationStations() {
-		return reservationStations;
-	}
+	
 	public Main() {
 		mulspace = 2;
 		addspace = 3;
@@ -86,16 +55,41 @@ public class Main {
 		stopFetching = false;
 		startFetching = false;
 	}
+
+	public String getFetchQueue() {
+		return fetchresult;
+	}
+	public String getIssueQueue() {
+		return issueresult;
+	}
+	public String getExecuteQueue() {
+		return executeresult;
+	}
+	public String getWriteQueue() {
+		return writeresult;
+	}
+	public ArrayList<Instruction> getInstructionTable() {
+		return instructionTable;
+	}
+	public Memory getMainMemory() {
+		return mainMemory;
+	}
+	ArrayList<Instruction> instructionTable = new ArrayList<>();
+	public int getClock() {
+		return clock;
+	}
+	public ReservationStations getReservationStations() {
+		return reservationStations;
+	}
+	public RegisterFile getRegisterFile() {
+		return registerFile;
+	}
+	
 	public void run() {
 		while(runOne()) {
 			System.out.println("************************************************************");
 		}
 	}
-
-	public RegisterFile getRegisterFile() {
-		return registerFile;
-	}
-
 	public boolean runOne() {
 		if(clock==1000) {
 			System.out.println("Timed out");
@@ -114,6 +108,30 @@ public class Main {
 					fetchMethod();
 				}
 			}
+			fetchresult = "";
+			if(!fetch.isEmpty()) {
+				for(String value: fetch) {
+					fetchresult+= value.split(" ")[1] + " ";
+				}
+			}
+			issueresult = "";
+			if(!issue.isEmpty()) {
+				for(String value: issue) {
+					issueresult+= value.split(" ")[1] + " ";
+				}
+			}
+			executeresult = "";
+			if(!execute.isEmpty()) {
+				for(String value: execute) {
+					executeresult+= value.split(" ")[1] + " ";
+				}
+			}
+			writeresult = "";
+			if(!write.isEmpty()) {
+				for(String value: write) {
+					writeresult+= value.split(" ")[1] + " ";
+				}
+			}
 			printQueues();
 			if(!write.isEmpty() && clock>=3) {
 				writeMethod();
@@ -127,7 +145,6 @@ public class Main {
 			if(!fetch.isEmpty()) {
 				isOccupied();
 			}
-			System.out.println("test");
 			print();
 			clock++;
 			return true;
@@ -168,11 +185,10 @@ public class Main {
 		return reservationStations.isWaiting(Integer.parseInt(find.split(" ")[2]));
 	}
 	public int getInsts(String operation) {
-		if(operation.startsWith("ADDI") || operation.startsWith("BNEZ"))
+		if(operation.startsWith("ADDI") || operation.startsWith("SUBI") || operation.startsWith("BNEZ"))
 			return 1;
-		else if(operation.startsWith("MUL") || operation.startsWith("DIV")) {
+		else if(operation.startsWith("MUL") || operation.startsWith("DIV"))
 			return mulcount;
-		}
 		else if(operation.startsWith("ADD") || operation.startsWith("SUB"))
 			return addcount;
 		else if(operation.startsWith("L"))
@@ -181,6 +197,7 @@ public class Main {
 			return storecount;
 		return -1;
 	}
+	
 	public void execution(int executing, int index, String operation) {
 		Instruction i = instructionTable.get(index);
 		if(operation.startsWith("MUL")) {
@@ -289,7 +306,6 @@ public class Main {
 	}
 
 	public void writeMethod() {
-		int written = Integer.parseInt((String)write.peek().split(" ")[1]);
 		int index = Integer.parseInt((String)write.peek().split(" ")[2]);
 		Instruction i = instructionTable.get(index);
 		String operation = (String)write.peek().split(" ")[0];
@@ -306,7 +322,7 @@ public class Main {
 		i.setWriteResult(clock);
 		write.remove();
 	}
-
+	
 	public void printQueues() {
 		if(!fetch.isEmpty()) {
 			System.out.print("Fetch Queue: ");
@@ -337,7 +353,6 @@ public class Main {
 			System.out.println();
 		}
 	}
-
 	public void print() {
 		mainMemory.toString();
 		reservationStations.toString();
@@ -371,7 +386,7 @@ public class Main {
 //		System.out.println(mulcount + " " + addcount + " " + loadcount + " " + storecount);
 //		obj.close();
 
-		//Main main = new Main();
-		//main.run();
+		Main main = new Main();
+		main.run();
 	}
 }

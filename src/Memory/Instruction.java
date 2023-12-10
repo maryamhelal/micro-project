@@ -55,8 +55,11 @@ public class Instruction {
 	public void setK(String value) {
 		k = value;
 	}
-	public int getIssue() {
-		return issue;
+	public String getIssue() {
+		if(issue==-1)
+			return "";
+		else
+			return ""+issue;
 	}
 	public void setIssue(int value) {
 		issue = value;
@@ -70,8 +73,11 @@ public class Instruction {
 	public void setExecutionComplete(int value) {
 		executionComplete += value;
 	}
-	public int getWriteResult() {
-		return writeResult;
+	public String getWriteResult() {
+		if(writeResult==-1)
+			return "";
+		else
+			return ""+writeResult;
 	}
 	public void setWriteResult(int value) {
 		writeResult = value;

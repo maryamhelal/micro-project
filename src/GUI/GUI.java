@@ -66,7 +66,7 @@ public class GUI {
         panel1.add(createTablePanel(LoadTable, "Load Stations"));
         panel1.add(createTablePanel(StoreTable, "Store Stations"));
         panel1.add(createTablePanel(MemoryTable, "Memory"));
-        panel1.add(createTablePanel(Iterations, "Iterations"));
+        panel1.add(createTablePanel(Iterations, "Instructions Table"));
         frame.add(createTablePanel(RegisterFile, "Register File"), BorderLayout.EAST);
 
 
@@ -123,10 +123,10 @@ public class GUI {
                 int[] busyAdd = main.getReservationStations().getBusyadd();
                 String[] OpAdd = main.getReservationStations().getOpadd();
                 String[] TagLoad = main.getReservationStations().getTagload();
-                int[] AddressLoad = main.getReservationStations().getAddressload();
+                String[] AddressLoad = main.getReservationStations().getAddressload();
                 int[] busyLoad = main.getReservationStations().getBusyload();
                 String[] TagStore = main.getReservationStations().getTagstore();
-                int[] AddressStore = main.getReservationStations().getAddressstore();
+                String[] AddressStore = main.getReservationStations().getAddressstore();
                 int[] busyStore = main.getReservationStations().getBusystore();
                 String[] VStore = main.getReservationStations().getVstore();
                 String[] QStore = main.getReservationStations().getQstore();
@@ -135,6 +135,15 @@ public class GUI {
                 String[] QRegister = main.getRegisterFile().getQ();
                 int[] ContentRegister = main.getRegisterFile().getContent();
                 ArrayList<Instruction> Instructions = main.getInstructionTable();
+                String fetchresult = main.getFetchQueue();
+                String issueresult = main.getIssueQueue();
+                String executeresult = main.getExecuteQueue();
+                String writeresult = main.getWriteQueue();
+                fetchQueueLabel.setText("Fetch Queue: " + fetchresult);
+                issueQueueLabel.setText("Issue Queue: " + issueresult);
+                executeQueueLabel.setText("Execute Queue: " + executeresult);
+                writeQueueLabel.setText("Write Queue: " + writeresult);
+                
                 for (int i = 0; i < Instructions.size(); i++) {
                     DefaultTableModel model = (DefaultTableModel) Iterations.getModel();
                     Object[] row = {Instructions.get(i).getIteration(), Instructions.get(i).getInstruction(), Instructions.get(i).getDestinationRegister(), Instructions.get(i).getJ(), Instructions.get(i).getK(), Instructions.get(i).getIssue(), Instructions.get(i).getExecutionComplete(), Instructions.get(i).getWriteResult()};
@@ -166,7 +175,6 @@ public class GUI {
                         model.setValueAt(QkMul[i], i, 6);
                     }
                 }
-
                 for (int i = 0; i < TagAdd.length; i++) {
                     DefaultTableModel model = (DefaultTableModel) AddTable.getModel();
                     Object[] row = {TagAdd[i], OpAdd[i], busyAdd[i], VjAdd[i], VkAdd[i], QjAdd[i], QkAdd[i]};
@@ -181,7 +189,6 @@ public class GUI {
                         model.setValueAt(QjAdd[i], i, 5);
                         model.setValueAt(QkAdd[i], i, 6);
                     }
-
                 }
                 for (int i = 0; i < TagLoad.length; i++) {
                     DefaultTableModel model = (DefaultTableModel) LoadTable.getModel();
@@ -193,7 +200,6 @@ public class GUI {
                         model.setValueAt(busyLoad[i], i, 1);
                         model.setValueAt(AddressLoad[i], i, 2);
                     }
-
                 }
                 for (int i = 0; i < TagStore.length; i++) {
                     DefaultTableModel model = (DefaultTableModel) StoreTable.getModel();
@@ -234,10 +240,7 @@ public class GUI {
                         model.setValueAt(QRegister[i], i, 1);
                         model.setValueAt(ContentRegister[i], i, 2);
                     }
-
                 }
-
-
             }
         });
         frame.add(nextButton, BorderLayout.SOUTH);
