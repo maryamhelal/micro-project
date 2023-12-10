@@ -185,9 +185,9 @@ public class Main {
 	public int getInsts(String operation) {
 		if(operation.startsWith("ADDI") || operation.startsWith("SUBI") || operation.startsWith("BNEZ"))
 			return 1;
-		else if(operation.startsWith("MUL") || operation.startsWith("DIV"))
+		else if(operation.contains("MUL") || operation.contains("DIV"))
 			return mulcount;
-		else if(operation.startsWith("ADD") || operation.startsWith("SUB"))
+		else if(operation.contains("ADD") || operation.contains("SUB"))
 			return addcount;
 		else if(operation.startsWith("L"))
 			return loadcount;
@@ -198,13 +198,13 @@ public class Main {
 	
 	public void execution(int executing, int index, String operation) {
 		Instruction i = instructionTable.get(index);
-		if(operation.startsWith("MUL")) {
+		if(operation.contains("MUL")) {
 			i.setResult(reservationStations.getVjmul(index) * reservationStations.getVkmul(index));
-		} else if(operation.startsWith("DIV")){
+		} else if(operation.contains("DIV")){
 			i.setResult(reservationStations.getVjmul(index) / reservationStations.getVkmul(index));
-		} else if(operation.startsWith("ADD")) {
+		} else if(operation.contains("ADD")) {
 			i.setResult(reservationStations.getVjadd(index) + reservationStations.getVkadd(index));
-		} else if(operation.startsWith("SUB")) {
+		} else if(operation.contains("SUB")) {
 			i.setResult(reservationStations.getVjadd(index) - reservationStations.getVkadd(index));
 		} else if(operation.startsWith("L")) {
 			i.setResult((int)mainMemory.getMemoryWithLocation(reservationStations.getAddressload(index)));
@@ -256,7 +256,7 @@ public class Main {
 			else
 				reg3 = ""+registerFile.getContent(i.getK());
 		}
-		if(operation.startsWith("S.D")) {
+		if(operation.startsWith("S.")) {
 			value2 = value1;
 			if(value2.equals("0")) {
 				reg2 = ""+registerFile.getContent(destinationRegister);
@@ -264,7 +264,7 @@ public class Main {
 		}
 		i.setCount(getInsts(operation));
 		reservationStations.setOccupied(operation,reg2,reg3,value2,value3,address,index);
-		if(!operation.startsWith("S.D") && !operation.startsWith("BNEZ")) {
+		if(!operation.startsWith("S.") && !operation.startsWith("BNEZ")) {
 			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(index), index);
 		}
 		i.setIssue(clock);
@@ -309,7 +309,7 @@ public class Main {
 		String operation = (String)write.peek().split(" ")[0];
 		String registerWrite = i.getDestinationRegister();
 
-		if(operation.startsWith("MUL") || operation.startsWith("DIV") || operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("L")){
+		if(operation.contains("MUL") || operation.contains("DIV") || operation.contains("ADD") || operation.contains("SUB") || operation.startsWith("L")){
 			reservationStations.writeWaiting(reservationStations.getTagUsingLine(index), ""+i.getResult());
 			if(reservationStations.getTagUsingLine(index)==registerFile.getQ(registerWrite))
 				registerFile.setContent(registerWrite, i.getResult());
