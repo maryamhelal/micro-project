@@ -3,16 +3,10 @@ package Memory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-//import java.util.Random;
 
 public class Memory {
 	int memorySize = 500;
 	Object[] Memory = new Object[memorySize];
-
-	public int[] getChanged() {
-		return changed;
-	}
-
 	int[] changed = new int[memorySize];
 	Object[] read = new Object[100];
 	String[] operations;
@@ -24,7 +18,6 @@ public class Memory {
 	int[] jump;
 	String[] label;
 	String[] branch;
-	boolean isIteration;
 	public static int count = 0;
 
 	public Memory(String fileName) {
@@ -47,40 +40,75 @@ public class Memory {
 		}
 	}
 	
-	public Object getMemoryWithLocation(int i) {
-		changed[i] = 1;
-		return Memory[i];
+	public int[] getChanged() {
+		return changed;
 	}
-
-	public void setMemory(int x, Object y) {
-		changed[x] = 1;
-		Memory[x] = y;
+	public Object[] getMemory() {
+		return Memory;
+	}
+	public String[] getOperations() {
+		return operations;
 	}
 	
+	public Object getMemoryWithLocation(int i) {
+		return Memory[i];
+	}
+	public void setMemory(int x, Object y) {
+		Memory[x] = y;
+	}
+	public Object getReadWithLocation(int i) {
+		return read[i];
+	}
+	public void setRead(int x, Object y) {
+		read[x] = y;
+	}
+	public int getDestination(int n) {
+		return destination[n];
+	}
+	public int getAddressposition(int n) {
+		return addressposition[n];
+	}
+	public int getRegister2(int n) {
+		return register2[n];
+	}
+	public int getRegister3(int n) {
+		return register3[n];
+	}
+	public int getImm(int n) {
+		return imm[n];
+	}
+	public int getJump(int n) {
+		return jump[n];
+	}
+	public String getBranch(int n) {
+		return branch[n];
+	}
+	public boolean getLabel(int n) {
+		if(label[n]==null)
+			return false;
+		return true;
+	}
+	public int getLabelWithString(String branch) {
+		for(int i=0;i<label.length;i++) {
+			if(label[i]==null)
+				continue;
+			else if(label[i].equals(branch))
+				return i;
+		}
+		return -1;
+	}
+	public String getOperationsWithLocation(int i) {
+		return operations[i];
+	}
 	public void generateMemory() {
 		for(int i = 0; i < memorySize; i++) {
 			Memory[i] = 5;
 		}
 	}
-	
-	public Object getReadWithLocation(int i) {
-		return read[i];
+	public void setChanged(int index) {
+		changed[index] = 1;
 	}
-
-	public void setRead(int x, Object y) {
-		read[x] = y;
-	}
-	
-	public String[] getOperations() {
-		return operations;
-	}
-	
-	public String getOperationsWithLocation(int i) {
-		return operations[i];
-	}
-	
 	public void setOperations() {
-		isIteration = false;
 		operations = new String[count];
 		destination = new int[count];
 		addressposition = new int[count];
@@ -154,52 +182,12 @@ public class Memory {
 				branch[i] = (((String)read[i]).split(","))[1];
 			} else {
 				label[i] = (String)read[i];
-				isIteration = true;
 			}
 		}
-	}
-	
-	public int getDestination(int n) {
-		return destination[n];
-	}
-	public int getAddressposition(int n) {
-		return addressposition[n];
-	}
-	public int getRegister2(int n) {
-		return register2[n];
-	}
-	public int getRegister3(int n) {
-		return register3[n];
-	}
-	public int getImm(int n) {
-		return imm[n];
-	}
-	public int getJump(int n) {
-		return jump[n];
-	}
-	public String getBranch(int n) {
-		return branch[n];
-	}
-	public boolean isIteration() {
-		return isIteration;
-	}
-	public boolean getLabel(int n) {
-		if(label[n]==null)
-			return false;
-		return true;
-	}
-	public int getLabelWithString(String branch) {
-		for(int i=0;i<label.length;i++) {
-			if(label[i]==null)
-				continue;
-			else if(label[i].equals(branch))
-				return i;
+		for(int i=0;i<addressposition.length;i++) {
+			if(addressposition[i]!=-1)
+				setChanged(addressposition[i]);
 		}
-		return -1;
-	}
-
-	public Object[] getMemory() {
-		return Memory;
 	}
 
 	public String toString() {

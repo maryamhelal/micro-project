@@ -1,7 +1,5 @@
 package Memory;
 
-//import java.util.Random;
-
 public class RegisterFile {
 	String[] tag;
 	String[] q;
@@ -28,6 +26,16 @@ public class RegisterFile {
 					content[i] = 0;
 			}
 		}
+	}
+	
+	public String[] getTag() {
+		return tag;
+	}
+	public String[] getQ() {
+		return q;
+	}
+	public int[] getContent() {
+		return content;
 	}
 
 	public String getQ(String register) {
@@ -100,17 +108,5 @@ public class RegisterFile {
 				System.out.println(tag[i] + "  | " + q[i] + " | " + content[i]);
 		}
 		return "";
-	}
-
-	public String[] getTag() {
-		return tag;
-	}
-
-	public String[] getQ() {
-		return q;
-	}
-
-	public int[] getContent() {
-		return content;
 	}
 }

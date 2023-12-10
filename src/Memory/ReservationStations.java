@@ -252,6 +252,80 @@ public class ReservationStations {
 		return qstore[getIndexUsingLine(line)];
 	}
 	
+	private int getIndexUsingLine(int n) {
+		for(int i=0;i<tagmul.length;i++) {
+			if(linemul[i]==n)
+				return i;
+		}
+		for(int i=0;i<tagadd.length;i++) {
+			if(lineadd[i]==n)
+				return i;
+		}
+		for(int i=0;i<tagload.length;i++) {
+			if(lineload[i]==n)
+				return i;
+		}
+		for(int i=0;i<tagstore.length;i++) {
+			if(linestore[i]==n)
+				return i;
+		}
+		return -1;
+	}
+	public String getTagUsingLine(int n) {
+		for(int i=0;i<tagmul.length;i++) {
+			if(linemul[i]==n)
+				return tagmul[i];
+		}
+		for(int i=0;i<tagadd.length;i++) {
+			if(lineadd[i]==n)
+				return tagadd[i];
+		}
+		for(int i=0;i<tagload.length;i++) {
+			if(lineload[i]==n)
+				return tagload[i];
+		}
+		for(int i=0;i<tagstore.length;i++) {
+			if(linestore[i]==n)
+				return tagstore[i];
+		}
+		return "";
+	}
+	
+	public boolean isOccupied(String operation) {
+		int n = -1;
+		if(operation.startsWith("MUL") || operation.startsWith("DIV"))
+			for(int i = 0;i < tagmul.length; i++) {
+				if(busymul[i]==0) {
+					n=i;
+					break;
+				}
+			}
+		else if(operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("BNEZ"))
+			for(int i = 0; i < tagadd.length; i++) {
+				if(busyadd[i]==0) {
+					n=i;
+					break;
+				}
+			}
+		else if(operation.startsWith("L"))
+			for(int i = 0; i < tagload.length; i++) {
+				if(busyload[i]==0) {
+					n=i;
+					break;
+				}
+			}
+		else if(operation.startsWith("S"))
+			for(int i = 0; i < tagstore.length; i++) {
+				if(busystore[i]==0) {
+					n=i;
+					break;
+				}
+			}
+		if(n==-1)
+			return true;
+		else
+			return false;
+	}
 	public void setOccupied(String op, String vj, String vk, String qj, String qk, int address, int line) {
 		int n = -1;
 		if(op.startsWith("MUL") || op.startsWith("DIV")) {
@@ -308,7 +382,21 @@ public class ReservationStations {
 			linestore[n] = line;
 		}
 	}
-	
+	public boolean isWaiting(int index) {
+		String tag = getTagUsingLine(index);
+		int i = getIndexUsingLine(index);
+		if(tag.startsWith("M")){
+			if(!qjmul[i].equals("0") || !qkmul[i].equals("0"))
+				return true;
+		} else if(tag.startsWith("A")){
+			if(!qjadd[i].equals("0") || !qkadd[i].equals("0"))
+				return true;
+		} else if(tag.startsWith("S")){
+			if(!qstore[i].equals("0"))
+				return true;
+		}
+		return false;
+	}
 	public void writeWaiting(String tagdestination, String value) {
 		for(int i=0;i<qjmul.length;i++) {
 			if(qjmul[i].equals(tagdestination)) {
@@ -336,94 +424,6 @@ public class ReservationStations {
 				qstore[i] = "0";
 			}
 		}
-	}
-	private int getIndexUsingLine(int n) {
-		for(int i=0;i<tagmul.length;i++) {
-			if(linemul[i]==n)
-				return i;
-		}
-		for(int i=0;i<tagadd.length;i++) {
-			if(lineadd[i]==n)
-				return i;
-		}
-		for(int i=0;i<tagload.length;i++) {
-			if(lineload[i]==n)
-				return i;
-		}
-		for(int i=0;i<tagstore.length;i++) {
-			if(linestore[i]==n)
-				return i;
-		}
-		return -1;
-	}
-	public String getTagUsingLine(int n) {
-		for(int i=0;i<tagmul.length;i++) {
-			if(linemul[i]==n)
-				return tagmul[i];
-		}
-		for(int i=0;i<tagadd.length;i++) {
-			if(lineadd[i]==n)
-				return tagadd[i];
-		}
-		for(int i=0;i<tagload.length;i++) {
-			if(lineload[i]==n)
-				return tagload[i];
-		}
-		for(int i=0;i<tagstore.length;i++) {
-			if(linestore[i]==n)
-				return tagstore[i];
-		}
-		return "";
-	}
-	public boolean isWaiting(int index) {
-		String tag = getTagUsingLine(index);
-		int i = getIndexUsingLine(index);
-		if(tag.startsWith("M")){
-			if(!qjmul[i].equals("0") || !qkmul[i].equals("0"))
-				return true;
-		} else if(tag.startsWith("A")){
-			if(!qjadd[i].equals("0") || !qkadd[i].equals("0"))
-				return true;
-		} else if(tag.startsWith("S")){
-			if(!qstore[i].equals("0"))
-				return true;
-		}
-		return false;
-	}
-	public boolean isOccupied(String operation) {
-		int n = -1;
-		if(operation.startsWith("MUL") || operation.startsWith("DIV"))
-			for(int i = 0;i < tagmul.length; i++) {
-				if(busymul[i]==0) {
-					n=i;
-					break;
-				}
-			}
-		else if(operation.startsWith("ADD") || operation.startsWith("SUB") || operation.startsWith("BNEZ"))
-			for(int i = 0; i < tagadd.length; i++) {
-				if(busyadd[i]==0) {
-					n=i;
-					break;
-				}
-			}
-		else if(operation.startsWith("L"))
-			for(int i = 0; i < tagload.length; i++) {
-				if(busyload[i]==0) {
-					n=i;
-					break;
-				}
-			}
-		else if(operation.startsWith("S"))
-			for(int i = 0; i < tagstore.length; i++) {
-				if(busystore[i]==0) {
-					n=i;
-					break;
-				}
-			}
-		if(n==-1)
-			return true;
-		else
-			return false;
 	}
 	public void setAvailable(int line) {
 		String tag = getTagUsingLine(line);
