@@ -35,11 +35,25 @@ public class GUI {
     }
 
     public static void main(String[] args) {
-        Main main = new Main();
-
-        final boolean[] isNext = {false};
+    	String[] inputValues = new String[8];
+    	int[] inputvalues = new int[8];
+    	inputValues[0] =  JOptionPane.showInputDialog("Enter size of mul reservation station");
+    	inputValues[1] =  JOptionPane.showInputDialog("Enter size of add reservation station");
+    	inputValues[2] =  JOptionPane.showInputDialog("Enter size of load reservation station");
+    	inputValues[3] =  JOptionPane.showInputDialog("Enter size of store reservation station");
+    	inputValues[4] =  JOptionPane.showInputDialog("Enter size of mul cycles");
+    	inputValues[5] =  JOptionPane.showInputDialog("Enter size of add cycles");
+    	inputValues[6] =  JOptionPane.showInputDialog("Enter size of load cycles");
+    	inputValues[7] =  JOptionPane.showInputDialog("Enter size of store cycles");
+        for (int i = 0; i < 8; i++) {
+        	if(inputValues[i]==null)
+        		inputvalues[i] = 3;
+        	else
+        		inputvalues[i] = Integer.parseInt(inputValues[i]);
+        }
+//        int[] inputvalues = {2,3,3,3,8,3,2,2};
+        Main main = new Main(inputvalues);
         // Create tables
-
         JTable MulTable = createTable("Tag", "Op", "Busy", "Vj", "Vq", "Qj", "Qk", "A");
         JTable AddTable = createTable("Tag", "Op", "Busy", "Vj", "Vq", "Qj", "Qk", "A");
         JTable LoadTable = createTable("Tag", "Busy", "Address");
@@ -69,30 +83,21 @@ public class GUI {
         panel1.add(createTablePanel(Iterations, "Instructions Table"));
         frame.add(createTablePanel(RegisterFile, "Register File"), BorderLayout.EAST);
 
-
         JPanel subPanel1 = new JPanel(new GridLayout(2, 1));
 
         JLabel fetchQueueLabel = new JLabel("Fetch Queue: ", SwingConstants.CENTER);
         fetchQueueLabel.setFont(new Font("Arial", Font.BOLD, 15));
         subPanel1.add(fetchQueueLabel);
-
-
         JLabel issueQueueLabel = new JLabel("Issue Queue: ", SwingConstants.CENTER);
         issueQueueLabel.setFont(new Font("Arial", Font.BOLD, 15));
         subPanel1.add(issueQueueLabel);
-
-
         JPanel subPanel2 = new JPanel(new GridLayout(2, 1));
-        // Add Execute Queue Label
         JLabel executeQueueLabel = new JLabel("Execute Queue: ", SwingConstants.CENTER);
         executeQueueLabel.setFont(new Font("Arial", Font.BOLD, 15));
         subPanel2.add(executeQueueLabel);
-
-        // Add Write Queue Label
         JLabel writeQueueLabel = new JLabel("Write Queue: ", SwingConstants.CENTER);
         writeQueueLabel.setFont(new Font("Arial", Font.BOLD, 15));
         subPanel2.add(writeQueueLabel);
-
 
         panel1.add(subPanel1, BorderLayout.CENTER);
         panel1.add(subPanel2, BorderLayout.CENTER);
