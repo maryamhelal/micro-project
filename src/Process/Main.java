@@ -157,17 +157,17 @@ public class Main {
 		instruction.setIteration(iterations);
 		instruction.setInstruction(op);
 		if(op.startsWith("ADDI") || op.startsWith("SUBI")) {
-			instruction.setDestinationRegister("R"+mainMemory.getDestination(line));
-			instruction.setJ("R"+mainMemory.getRegister2(line));
+			instruction.setDestinationRegister(mainMemory.getRegisterName(line)+mainMemory.getDestination(line));
+			instruction.setJ(mainMemory.getRegisterName(line)+mainMemory.getRegister2(line));
 			instruction.setK(""+mainMemory.getImm(line));
 		} else if(op.startsWith("BNEZ")) {
-			instruction.setDestinationRegister("R"+mainMemory.getJump(line));
+			instruction.setDestinationRegister(mainMemory.getRegisterName(line)+mainMemory.getJump(line));
 			instruction.setJ(mainMemory.getBranch(line));
-		} else if(op.startsWith("MUL") || op.startsWith("DIV") || op.startsWith("ADD") || op.startsWith("SUB") || op.startsWith("L") || op.startsWith("S")){
-			instruction.setDestinationRegister("F"+mainMemory.getDestination(line));
-			if(op.startsWith("MUL") || op.startsWith("DIV") || op.startsWith("ADD") || op.startsWith("SUB")) {
-				instruction.setJ("F"+mainMemory.getRegister2(line));
-				instruction.setK("F"+mainMemory.getRegister3(line));
+		} else if(op.contains("MUL") || op.contains("DIV") || op.contains("ADD") || op.contains("SUB") || op.startsWith("L") || op.startsWith("S")){
+			instruction.setDestinationRegister(mainMemory.getRegisterName(line)+mainMemory.getDestination(line));
+			if(op.contains("MUL") || op.contains("DIV") || op.contains("ADD") || op.contains("SUB")) {
+				instruction.setJ(mainMemory.getRegisterName(line)+mainMemory.getRegister2(line));
+				instruction.setK(mainMemory.getRegisterName(line)+mainMemory.getRegister3(line));
 			} else if(op.startsWith("L") || op.startsWith("S"))
 				instruction.setJ(""+mainMemory.getAddressposition(line));
 		}

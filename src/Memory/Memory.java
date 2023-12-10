@@ -14,6 +14,7 @@ public class Memory {
 	int[] addressposition;
 	int[] register2;
 	int[] register3;
+	String[] registerName;
 	int[] imm;
 	int[] jump;
 	String[] label;
@@ -74,6 +75,9 @@ public class Memory {
 	public int getRegister3(int n) {
 		return register3[n];
 	}
+	public String getRegisterName(int n) {
+		return registerName[n];
+	}
 	public int getImm(int n) {
 		return imm[n];
 	}
@@ -114,6 +118,7 @@ public class Memory {
 		addressposition = new int[count];
 		register2 = new int[count];
 		register3 = new int[count];
+		registerName = new String[count];
 		imm = new int[count];
 		jump = new int[count];
 		label = new String[count];
@@ -125,6 +130,7 @@ public class Memory {
 			register3[i] = -1;
 			imm[i] = -1;
 			jump[i] = -1;
+			registerName[i] = "";
 		}
 		for(int i=0;i<count;i++) {
 			operations[i] = (((String)read[i]).split(" "))[0];
@@ -133,10 +139,14 @@ public class Memory {
 				String result2;
 				result1 = (((String)read[i]).split(" "))[1];
 				result2 = (((String)read[i]).split(","))[1];
-				//System.out.println("load/store: " + result1 + " " + result2);
 				for(int j = 0;j<32;j++) {
 					if(result1.contains("F"+j)) {
 						destination[i] = j;
+						registerName[i] = "F";
+					}
+					if(result1.contains("R"+j)) {
+						destination[i] = j;
+						registerName[i] = "R";
 					}
 				}
 				addressposition[i] = Integer.parseInt(result2);
@@ -147,13 +157,31 @@ public class Memory {
 				result1 = ((((String)read[i]).split(" "))[1]).split(",")[0];
 				result2 = (((String)read[i]).split(","))[1];
 				result3 = (((String)read[i]).split(","))[2];
-				//System.out.println("floating point: " + result1 + " " + result2 + " " + result3);
 				for(int j = 0;j<32;j++) {
-					if(result1.equals("F"+j))
+					if(result1.equals("F"+j)) {
 						destination[i] = j;
+						registerName[i] = "F";
+					}
 					if(result2.equals("F"+j))
 						register2[i] = j;
 					if(result3.equals("F"+j))
+						register3[i] = j;
+				}
+			} else if(operations[i].equals("DADD") || operations[i].equals("DSUB") || operations[i].equals("DMUL") || operations[i].equals("DDIV")) {
+				String result1;
+				String result2;
+				String result3;
+				result1 = ((((String)read[i]).split(" "))[1]).split(",")[0];
+				result2 = (((String)read[i]).split(","))[1];
+				result3 = (((String)read[i]).split(","))[2];
+				for(int j = 0;j<32;j++) {
+					if(result1.equals("R"+j)) {
+						destination[i] = j;
+						registerName[i] = "R";
+					}
+					if(result2.equals("R"+j))
+						register2[i] = j;
+					if(result3.equals("R"+j))
 						register3[i] = j;
 				}
 			} else if(operations[i].equals("ADDI") || operations[i].equals("SUBI")) {
@@ -163,10 +191,11 @@ public class Memory {
 				result1 = ((((String)read[i]).split(" "))[1]).split(",")[0];
 				result2 = (((String)read[i]).split(","))[1];
 				result3 = (((String)read[i]).split(","))[2];
-				//System.out.println("integer: " + result1 + " " + result2 + " " + result3);
 				for(int j = 0;j<32;j++) {
-					if(result1.equals("R"+j))
+					if(result1.equals("R"+j)) {
 						destination[i] = j;
+						registerName[i] = "R";
+					}
 					if(result2.equals("R"+j))
 						register2[i] = j;
 				}
@@ -174,12 +203,42 @@ public class Memory {
 			} else if(operations[i].equals("BNEZ")) {
 				String result;
 				result = ((((String)read[i]).split(" "))[1]).split(",")[0];
-				//System.out.println("jump: " + result + " " + (((String)read[i]).split(","))[1]);
 				for(int j = 0;j<32;j++) {
-					if(result.equals("R"+j))
+					if(result.equals("F"+j)) {
 						jump[i] = j;
+						registerName[i] = "F";
+					}
+					if(result.equals("R"+j)) {
+						jump[i] = j;
+						registerName[i] = "R";
+					}
 				}
 				branch[i] = (((String)read[i]).split(","))[1];
+			} else if(operations[i].contains("ADD") || operations[i].contains("SUB") || operations[i].contains("MUL") || operations[i].contains("DIV")) {
+				String result1;
+				String result2;
+				String result3;
+				result1 = ((((String)read[i]).split(" "))[1]).split(",")[0];
+				result2 = (((String)read[i]).split(","))[1];
+				result3 = (((String)read[i]).split(","))[2];
+				for(int j = 0;j<32;j++) {
+					if(result1.equals("F"+j)) {
+						destination[i] = j;
+						registerName[i] = "F";
+					}
+					if(result2.equals("F"+j))
+						register2[i] = j;
+					if(result3.equals("F"+j))
+						register3[i] = j;
+					if(result1.equals("R"+j)) {
+						destination[i] = j;
+						registerName[i] = "R";
+					}
+					if(result2.equals("R"+j))
+						register2[i] = j;
+					if(result3.equals("R"+j))
+						register3[i] = j;
+				}
 			} else {
 				label[i] = (String)read[i];
 			}
