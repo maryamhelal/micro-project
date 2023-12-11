@@ -23,6 +23,7 @@ public class Main {
 	String issueresult = "";
 	String executeresult = "";
 	String writeresult = "";
+	ArrayList<Instruction> instructionTable = new ArrayList<>();
 	Queue<String> fetch = new LinkedList<String>();
 	Queue<String> issue = new LinkedList<String>();
 	Queue<String> execute = new LinkedList<String>();
@@ -30,7 +31,6 @@ public class Main {
 	ReservationStations reservationStations;
 	RegisterFile registerFile;
 	boolean stopFetching;
-	boolean startFetching;
 	
 	public Main(int[] input) {
 		setInput(input);
@@ -41,7 +41,6 @@ public class Main {
 		reservationStations = new ReservationStations(mulspace,addspace,loadspace,storespace);
 		registerFile = new RegisterFile();
 		stopFetching = false;
-		startFetching = false;
 	}
 
 	public void setInput(int[] values) {
@@ -72,7 +71,6 @@ public class Main {
 	public Memory getMainMemory() {
 		return mainMemory;
 	}
-	ArrayList<Instruction> instructionTable = new ArrayList<>();
 	public int getClock() {
 		return clock;
 	}
@@ -93,11 +91,10 @@ public class Main {
 			System.out.println("Timed out");
 			return false;
 		}
-		if(!fetch.isEmpty() || !issue.isEmpty() || !execute.isEmpty() || !write.isEmpty() || clock == 0 || startFetching) {
+		if(!fetch.isEmpty() || !issue.isEmpty() || !execute.isEmpty() || !write.isEmpty() || clock == 0) {
 			System.out.println("********************** Clock Cycle: " + clock + " **********************");
 			if(line < mainMemory.getOperations().length) {
 				if(!mainMemory.getLabel(line) && !stopFetching) {
-					startFetching = false;
 					fetchMethod();
 				} else if(mainMemory.getLabel(line)) {
 					iterations++;
@@ -216,7 +213,6 @@ public class Main {
 					line = mainMemory.getLabelWithString(mainMemory.getBranch(executing));
 				} else {
 					line++;
-					System.out.println(line);
 					iterations = 0;
 				}
 				stopFetching = false;
@@ -306,7 +302,7 @@ public class Main {
 	public void writeMethod() {
 		int index = Integer.parseInt((String)write.peek().split(" ")[2]);
 		Instruction i = instructionTable.get(index);
-		String operation = (String)write.peek().split(" ")[0];
+		String operation = write.peek().split(" ")[0];
 		String registerWrite = i.getDestinationRegister();
 
 		if(operation.contains("MUL") || operation.contains("DIV") || operation.contains("ADD") || operation.contains("SUB") || operation.startsWith("L")){
@@ -357,13 +353,13 @@ public class Main {
 		inputValues[2] = obj.nextLine();
 		System.out.println("Enter size of store reservation station");
 		inputValues[3] = obj.nextLine();
-		System.out.println("Enter size of mul cycles");
+		System.out.println("Enter number of mul cycles");
 		inputValues[4] = obj.nextLine();
-		System.out.println("Enter size of add cycles");
+		System.out.println("Enter number of add cycles");
 		inputValues[5] = obj.nextLine();
-		System.out.println("Enter size of load cycles");
+		System.out.println("Enter number of load cycles");
 		inputValues[6] = obj.nextLine();
-		System.out.println("Enter size of store cycles");
+		System.out.println("Enter number of store cycles");
 		inputValues[7]= obj.nextLine();
 		System.out.println(mulspace + " " + addspace + " " + loadspace + " " + storespace);
 		System.out.println(mulcount + " " + addcount + " " + loadcount + " " + storecount);

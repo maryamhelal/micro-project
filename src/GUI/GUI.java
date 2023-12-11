@@ -35,10 +35,10 @@ public class GUI {
     	inputValues[1] =  JOptionPane.showInputDialog("Enter size of add reservation station");
     	inputValues[2] =  JOptionPane.showInputDialog("Enter size of load reservation station");
     	inputValues[3] =  JOptionPane.showInputDialog("Enter size of store reservation station");
-    	inputValues[4] =  JOptionPane.showInputDialog("Enter size of mul cycles");
-    	inputValues[5] =  JOptionPane.showInputDialog("Enter size of add cycles");
-    	inputValues[6] =  JOptionPane.showInputDialog("Enter size of load cycles");
-    	inputValues[7] =  JOptionPane.showInputDialog("Enter size of store cycles");
+    	inputValues[4] =  JOptionPane.showInputDialog("Enter number of mul cycles");
+    	inputValues[5] =  JOptionPane.showInputDialog("Enter number of add cycles");
+    	inputValues[6] =  JOptionPane.showInputDialog("Enter number of load cycles");
+    	inputValues[7] =  JOptionPane.showInputDialog("Enter number of store cycles");
         for (int i = 0; i < 8; i++) {
         	try {
         		inputvalues[i] = Integer.parseInt(inputValues[i]);
