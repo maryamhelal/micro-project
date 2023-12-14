@@ -147,6 +147,7 @@ public class GUI {
                 for (int i = 0; i < Instructions.size(); i++) {
                     DefaultTableModel model = (DefaultTableModel) Iterations.getModel();
                     Object[] row = {Instructions.get(i).getIteration(), Instructions.get(i).getInstruction(), Instructions.get(i).getDestinationRegister(), Instructions.get(i).getJ(), Instructions.get(i).getK(), Instructions.get(i).getIssue(), Instructions.get(i).getExecutionComplete(), Instructions.get(i).getWriteResult()};
+
                     if (model.getRowCount() < Instructions.size()) {
                         model.addRow(row);
                     } else {

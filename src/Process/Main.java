@@ -43,7 +43,7 @@ public class Main {
 		stopFetching = false;
 	}
 
-	public void setInput(int[] values) {
+	public void setInput(int[] values) { //takes all 8 from the user and sets to variables, used here and in GUI
 		mulspace = values[0];
 		addspace = values[1];
 		loadspace = values[2];
@@ -53,6 +53,8 @@ public class Main {
 		loadcount = values[6];
 		storecount = values[7];
 	}
+	
+	//getters for GUI
 	public String getFetchQueue() {
 		return fetchresult;
 	}
@@ -81,28 +83,30 @@ public class Main {
 		return registerFile;
 	}
 	
-	public void run() {
+	public void run() { //called in Main
 		while(runOne()) {
 			System.out.println("************************************************************");
 		}
 	}
-	public boolean runOne() {
-		if(clock==1000) {
+	
+	public boolean runOne() { //called in GUI with every "NEXT" button click, and here in run method inside a while loop
+		if(clock==1000) { //to not have an infinite loop
 			System.out.println("Timed out");
 			return false;
 		}
 		if(!fetch.isEmpty() || !issue.isEmpty() || !execute.isEmpty() || !write.isEmpty() || clock == 0) {
 			System.out.println("********************** Clock Cycle: " + clock + " **********************");
-			if(line < mainMemory.getOperations().length) {
-				if(!mainMemory.getLabel(line) && !stopFetching) {
+			if(line < mainMemory.getOperations().length) { //checks length of text file
+				if(!mainMemory.getLabel(line) && !stopFetching) { //if line contains an instruction and is not waiting for a branch result
 					fetchMethod();
-				} else if(mainMemory.getLabel(line)) {
-					iterations++;
-					loadInstruction(line);
-					line++;
+				} else if(mainMemory.getLabel(line)) { //if label in text file
+					iterations++; //every time label is read
+					loadInstruction(line); //but do not add to fetch as it does not enter Tomasulo architecture
+					line++; //go to next line to not waste fetching in a cycle
 					fetchMethod();
 				}
 			}
+			//used to print queues here and in GUI
 			fetchresult = "";
 			if(!fetch.isEmpty()) {
 				for(String value: fetch) {
@@ -127,7 +131,9 @@ public class Main {
 					writeresult+= value.split(" ")[1] + " ";
 				}
 			}
-			printQueues();
+			printQueues(); //at the end
+			
+			//reversely put so all instructions have a clock cycle between each step and the next
 			if(!write.isEmpty() && clock>=3) {
 				writeMethod();
 			}
@@ -140,15 +146,16 @@ public class Main {
 			if(!fetch.isEmpty()) {
 				isOccupied();
 			}
-			print();
+			
+			print(); //at the end
 			clock++;
-			return true;
+			return true; //as long as there are still cycles left
 		}
 		clock-=clock;
-		return false;
+		return false; //when all instructions are done
 	}
 
-	public int loadInstruction(int line) {
+	public int loadInstruction(int line) { //for all text file lines
 		Instruction instruction = new Instruction();
 		String op = mainMemory.getOperationsWithLocation(line);
 		instruction.setIteration(iterations);
@@ -168,18 +175,18 @@ public class Main {
 			} else if(op.startsWith("L") || op.startsWith("S"))
 				instruction.setJ(""+mainMemory.getAddressposition(line));
 		}
-		instructionTable.add(instruction);
-		return instructionTable.lastIndexOf(instruction);
+		instructionTable.add(instruction); //add to arraylist
+		return instructionTable.lastIndexOf(instruction); //value in arraylist, not the same as text file line, differs for loops
 	}
 
-	public void isOccupied() {
+	public void isOccupied() { //checks if reservation station of operation is full
 		if(!reservationStations.isOccupied(fetch.peek()))
 			issue.add(fetch.remove());
 	}
-	public boolean isWaiting(String find) {
+	public boolean isWaiting(String find) { //checks if instruction is waiting for values or can start executing
 		return reservationStations.isWaiting(Integer.parseInt(find.split(" ")[2]));
 	}
-	public int getInsts(String operation) {
+	public int getInsts(String operation) { //returns maximum clock cycle value for each operation
 		if(operation.startsWith("ADDI") || operation.startsWith("SUBI") || operation.startsWith("BNEZ"))
 			return 1;
 		else if(operation.contains("MUL") || operation.contains("DIV"))
@@ -193,7 +200,7 @@ public class Main {
 		return -1;
 	}
 	
-	public void execution(int executing, int index, String operation) {
+	public void execution(int executing, int index, String operation) { //used in executeMethod when count reaches 0
 		Instruction i = instructionTable.get(index);
 		if(operation.contains("MUL")) {
 			i.setResult(reservationStations.getVjmul(index) * reservationStations.getVkmul(index));
@@ -208,59 +215,63 @@ public class Main {
 		} else if(operation.startsWith("S")) {
 			i.setResult(reservationStations.getVstore(index));
 		} else if(operation.startsWith("BNEZ")) {
-			if(registerFile.getQ(i.getDestinationRegister()).equals("0")) {
+			if(registerFile.getQ(i.getDestinationRegister()).equals("0")) { //checks if register is ready to use
 				if(registerFile.getContent(i.getDestinationRegister()) != 0) {
-					line = mainMemory.getLabelWithString(mainMemory.getBranch(executing));
+					line = mainMemory.getLabelWithString(mainMemory.getBranch(executing)); //return to label line so we can loop
 				} else {
-					line++;
-					iterations = 0;
+					line++; //go to next line as we don't branch
+					iterations = 0; //no loop
 				}
-				stopFetching = false;
+				stopFetching = false; //contine fetching
 			}
 		}
 	}
 
 	public void fetchMethod() {
+		 //format in queue --> operation textFileLine instructionsTableIndex
 		fetch.add((String)mainMemory.getOperationsWithLocation(line) + " " + line + " " +loadInstruction(line));
 		if(((String)mainMemory.getOperationsWithLocation(line)).startsWith("BNEZ"))
 			stopFetching = true;
 		else
-			line++;
+			line++; //go to next line in the next clock cycle
 	}
 	public void issueMethod() {
 		String operation = (String)issue.peek().split(" ")[0];
-		int issued = Integer.parseInt((String)issue.peek().split(" ")[1]);
-		int index = Integer.parseInt((String)issue.peek().split(" ")[2]);
+		int issued = Integer.parseInt((String)issue.peek().split(" ")[1]); //textFileLine
+		int index = Integer.parseInt((String)issue.peek().split(" ")[2]); //instructionsTableIndex
 		Instruction i = instructionTable.get(index);
 		String destinationRegister = i.getDestinationRegister();
+		//check if register in register file is waiting for another instruction
 		String value1 = registerFile.getQ(destinationRegister);
 		String value2 = registerFile.getQ(i.getJ());
 		String value3 = registerFile.getQ(i.getK());
 		String reg2 = "";
 		String reg3 = "";
 		int address = mainMemory.getAddressposition(issued);
+		//we shouldn't have used these as issuing is in order
 		if(registerFile.getLine(i.getJ())>index)
 			value2 = "0";
 		if(registerFile.getLine(i.getK())>index)
 			value3 = "0";
-		if(value2.equals("0")) {
-			reg2 = ""+registerFile.getContent(i.getJ());
+		
+		if(value2.equals("0")) { //if not waiting for another instruction, source 1
+			reg2 = ""+registerFile.getContent(i.getJ()); //store its content (not register name) into reservation station
 		}
-		if(value3.equals("0")) {
+		if(value3.equals("0")) { //if not waiting for another instruction, source 2
 			if(operation.startsWith("ADDI") || operation.startsWith("SUBI") || operation.startsWith("BNEZ"))
-				reg3 = i.getK();
+				reg3 = i.getK(); //immediate value for addi and subi, branch label for bnez
 			else
-				reg3 = ""+registerFile.getContent(i.getK());
+				reg3 = ""+registerFile.getContent(i.getK()); //store its content (not register name) into reservation station
 		}
-		if(operation.startsWith("S.")) {
+		if(operation.startsWith("S.")) { //store
 			value2 = value1;
-			if(value2.equals("0")) {
+			if(value2.equals("0")) { //as register is not destination we only want to take a value from it not write to it
 				reg2 = ""+registerFile.getContent(destinationRegister);
 			}
 		}
-		i.setCount(getInsts(operation));
-		reservationStations.setOccupied(operation,reg2,reg3,value2,value3,address,index);
-		if(!operation.startsWith("S.") && !operation.startsWith("BNEZ")) {
+		i.setCount(getInsts(operation)); //set count to maximum clock cycles given by the user
+		reservationStations.setOccupied(operation,reg2,reg3,value2,value3,address,index); //add to reservation station
+		if(!operation.startsWith("S.") && !operation.startsWith("BNEZ")) { //the rest of the operations write to registers
 			registerFile.setQ(destinationRegister, reservationStations.getTagUsingLine(index), index);
 		}
 		i.setIssue(clock);
@@ -268,51 +279,51 @@ public class Main {
 	}
 
 	public void executeMethod() {
-		for(String value: execute) {
-			if(!isWaiting(value)) {
-				int executed = Integer.parseInt(value.split(" ")[1]);
-				int index = Integer.parseInt((String)value.split(" ")[2]);
+		for(String value: execute) { //everytime, we loop on all instructions inside the execute queue
+			if(!isWaiting(value)) { //start execution count if not waiting for another instruction
+				int executed = Integer.parseInt(value.split(" ")[1]); //textFileLine
+				int index = Integer.parseInt((String)value.split(" ")[2]); //instructionsTableIndex
 				Instruction i = instructionTable.get(index);
 				String operation = value.split(" ")[0];
-				if(i.getCount()==getInsts(operation))
+				if(i.getCount()==getInsts(operation)) //first execution clock cycle
 					i.setExecutionStart(clock);
-				if(i.getCount()==0) {
+				if(i.getCount()==0) { //last execution clock cycle
 					execution(executed, index, operation);
 					if(operation.startsWith("BNEZ")) {
 						if(!stopFetching) {
 							i.setExecutionComplete(clock);
 							write.add(value);
-							i.decrementCount();
-						}
+							i.decrementCount(); //set to -1 to clear
+						} //else, still waiting for another instruction in order to use register so did not execute
 					} else {
 						i.setExecutionComplete(clock);
 						write.add(value);
-						i.decrementCount();
+						i.decrementCount(); //set to -1 to clear
 					}
 				} else
-					i.decrementCount();
+					i.decrementCount(); //keep decrementing every clock cycle till it reaches 0 so we can start executing
 			}
 		}
-		for(String value: write) {
+		for(String value: write) { //remove instructions that finished execution
 			if(execute.contains(value))
 				execute.remove(value);
 		}
 	}
 
 	public void writeMethod() {
-		int index = Integer.parseInt((String)write.peek().split(" ")[2]);
+		int index = Integer.parseInt((String)write.peek().split(" ")[2]); //instructionsTableIndex
 		Instruction i = instructionTable.get(index);
 		String operation = write.peek().split(" ")[0];
 		String registerWrite = i.getDestinationRegister();
 
 		if(operation.contains("MUL") || operation.contains("DIV") || operation.contains("ADD") || operation.contains("SUB") || operation.startsWith("L")){
-			reservationStations.writeWaiting(reservationStations.getTagUsingLine(index), ""+i.getResult());
-			if(reservationStations.getTagUsingLine(index)==registerFile.getQ(registerWrite))
+			reservationStations.writeWaiting(reservationStations.getTagUsingLine(index), ""+i.getResult()); //writes result to all instructions waiting
+			if(reservationStations.getTagUsingLine(index)==registerFile.getQ(registerWrite)) //if destination register in register file is waiting for this instruction
 				registerFile.setContent(registerWrite, i.getResult());
 		} else if(operation.startsWith("S")) {
 			mainMemory.setMemory(reservationStations.getAddressstore(index),i.getResult());
 		}
-		reservationStations.setAvailable(index);
+		reservationStations.setAvailable(index); //remove from reservation station
 		i.setWriteResult(clock);
 		write.remove();
 	}

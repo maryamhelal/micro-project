@@ -28,6 +28,7 @@ public class RegisterFile {
 		}
 	}
 	
+	//getters for GUI
 	public String[] getTag() {
 		return tag;
 	}
@@ -38,6 +39,12 @@ public class RegisterFile {
 		return content;
 	}
 
+	//getters and setters for Main
+	
+	//given register name returns tag stored in Q 
+	//used in issuing to check dependency of source registers
+	//used in write step to check if there is a register waiting for a certain instruction (and write result to it in setContent)
+	//used in execution for BNEZ only to check dependency
 	public String getQ(String register) {
 		for(int i=0;i<32;i++) {
 			if(tag[i].equals(register))
@@ -47,6 +54,8 @@ public class RegisterFile {
 		}
 		return "0";
 	}
+	//sets Q of a given register (destination of instruction) with a tag value and stores line of instruction from instructionsTable
+	//used in issuing step
 	public void setQ(String register, String value, int line) {
 		for(int i=0;i<32;i++) {
 			if(tag[i].equals(register)) {
@@ -59,6 +68,8 @@ public class RegisterFile {
 			}
 		}
 	}
+	//given register name returns content of register 
+	//used in issuing step for all instructions, and in execution for BNEZ only
 	public int getContent(String register) {
 		for(int i=0;i<32;i++) {
 			if(tag[i].equals(register))
@@ -68,6 +79,8 @@ public class RegisterFile {
 		}
 		return -1;
 	}
+	//sets content of a given register and sets Q back to zero and line number to -1
+	//used in write step
 	public void setContent(String register, int val) {
 		for(int i=0;i<32;i++) {
 			if(tag[i].equals(register)) {
@@ -84,6 +97,8 @@ public class RegisterFile {
 			}
 		}
 	}
+	//gets line of instruction that has a tag in Q
+	//used in issuing step but we shouldn't have used it as issuing is in order
 	public int getLine(String register) {
 		for(int i=0;i<32;i++) {
 			if(tag[i].equals(register))

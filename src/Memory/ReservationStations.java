@@ -40,6 +40,7 @@ public class ReservationStations {
 		Store(store);
 	}
 
+	//getters for GUI
 	public String[] getTagmul() {
 		return tagmul;
 	}
@@ -121,6 +122,7 @@ public class ReservationStations {
 		return qstore;
 	}
 	
+	//constructors for each station
 	public void Mul(int n) {
 		tagmul = new String[n];
 		busymul = new int[n];
@@ -197,6 +199,7 @@ public class ReservationStations {
 		}
 	}
 
+	//getters for Main, given line of instruction in instructionsTable returns data from reservation station
 	public int getVjmul(int line) {
 		if(vjmul[getIndexUsingLine(line)].equals(""))
 			return 0;
@@ -252,6 +255,7 @@ public class ReservationStations {
 		return qstore[getIndexUsingLine(line)];
 	}
 	
+	//given line of instruction in instructionsTable, returns its index in the reservation station (only used in this class)
 	private int getIndexUsingLine(int n) {
 		for(int i=0;i<tagmul.length;i++) {
 			if(linemul[i]==n)
@@ -271,6 +275,7 @@ public class ReservationStations {
 		}
 		return -1;
 	}
+	//given line of instruction in instructionsTable, returns its tag in the reservation station (used here and in Main)
 	public String getTagUsingLine(int n) {
 		for(int i=0;i<tagmul.length;i++) {
 			if(linemul[i]==n)
@@ -291,6 +296,8 @@ public class ReservationStations {
 		return "";
 	}
 	
+	//checks if a reservation station is occupied based on the operation
+	//step 1 after fetching before issuing
 	public boolean isOccupied(String operation) {
 		int n = -1;
 		if(operation.contains("MUL") || operation.contains("DIV"))
@@ -326,6 +333,8 @@ public class ReservationStations {
 		else
 			return false;
 	}
+	//sets a place in the reservation station based on the operation 
+	//step 2 issuing
 	public void setOccupied(String op, String vj, String vk, String qj, String qk, int address, int line) {
 		int n = -1;
 		if(op.contains("MUL") || op.contains("DIV")) {
@@ -382,6 +391,8 @@ public class ReservationStations {
 			linestore[n] = line;
 		}
 	}
+	//checks if a reservation station is waiting for another based on Qj,Qk for mul and add, or Qstore for store
+	//step 3 before executing
 	public boolean isWaiting(int index) {
 		String tag = getTagUsingLine(index);
 		int i = getIndexUsingLine(index);
@@ -397,6 +408,8 @@ public class ReservationStations {
 		}
 		return false;
 	}
+	//sets value of waiting registers with the value written back if tag in Q matches tag of instruction writing back
+	//step 4 write
 	public void writeWaiting(String tagdestination, String value) {
 		for(int i=0;i<qjmul.length;i++) {
 			if(qjmul[i].equals(tagdestination)) {
@@ -425,6 +438,8 @@ public class ReservationStations {
 			}
 		}
 	}
+	//removes instruction from the reservation station
+	//step 5 write
 	public void setAvailable(int line) {
 		String tag = getTagUsingLine(line);
 		int n = getIndexUsingLine(line);
