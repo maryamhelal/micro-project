@@ -188,15 +188,15 @@ public class Main {
 	}
 	public int getInsts(String operation) { //returns maximum clock cycle value for each operation
 		if(operation.startsWith("ADDI") || operation.startsWith("SUBI") || operation.startsWith("BNEZ"))
-			return 1;
+			return 0;
 		else if(operation.contains("MUL") || operation.contains("DIV"))
-			return mulcount;
+			return mulcount - 1;
 		else if(operation.contains("ADD") || operation.contains("SUB"))
-			return addcount;
+			return addcount - 1;
 		else if(operation.startsWith("L"))
-			return loadcount;
+			return loadcount - 1;
 		else if(operation.startsWith("S"))
-			return storecount;
+			return storecount - 1;
 		return -1;
 	}
 	
@@ -215,15 +215,13 @@ public class Main {
 		} else if(operation.startsWith("S")) {
 			i.setResult(reservationStations.getVstore(index));
 		} else if(operation.startsWith("BNEZ")) {
-			if(registerFile.getQ(i.getDestinationRegister()).equals("0")) { //checks if register is ready to use
-				if(registerFile.getContent(i.getDestinationRegister()) != 0) {
-					line = mainMemory.getLabelWithString(mainMemory.getBranch(executing)); //return to label line so we can loop
-				} else {
-					line++; //go to next line as we don't branch
-					iterations = 0; //no loop
-				}
-				stopFetching = false; //contine fetching
+			if(reservationStations.getVjadd(index) != 0) {
+				line = mainMemory.getLabelWithString(mainMemory.getBranch(executing)); //return to label line so we can loop
+			} else {
+				line++; //go to next line as we don't branch
+				iterations = 0; //no loop
 			}
+			stopFetching = false; //contine fetching
 		}
 	}
 
@@ -263,7 +261,7 @@ public class Main {
 			else
 				reg3 = ""+registerFile.getContent(i.getK()); //store its content (not register name) into reservation station
 		}
-		if(operation.startsWith("S.")) { //store
+		if(operation.startsWith("S.") || operation.startsWith("BNEZ")) { //store
 			value2 = value1;
 			if(value2.equals("0")) { //as register is not destination we only want to take a value from it not write to it
 				reg2 = ""+registerFile.getContent(destinationRegister);
