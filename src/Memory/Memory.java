@@ -23,6 +23,7 @@ public class Memory {
 
 	public Memory(String fileName) {
 		try {
+			//reads text file
 			FileReader file = new FileReader(fileName);
 			BufferedReader myReader = new BufferedReader(file);
 			String line;
@@ -31,8 +32,10 @@ public class Memory {
 				read[count] = line;
 				count++;
 			}
+			//both at the end
 			generateMemory();
 			setOperations();
+			
 			file.close();
 			myReader.close();
 
@@ -41,6 +44,7 @@ public class Memory {
 		}
 	}
 	
+	//getters for GUI
 	public int[] getChanged() {
 		return changed;
 	}
@@ -51,48 +55,55 @@ public class Memory {
 		return operations;
 	}
 	
-	public Object getMemoryWithLocation(int i) {
+	//getters and setters for Main
+	
+	public Object getMemoryWithLocation(int i) { //used in execution for load ONLY
 		return Memory[i];
 	}
-	public void setMemory(int x, Object y) {
+	public void setMemory(int x, Object y) { //used in write for store ONLY
 		Memory[x] = y;
 	}
-	public Object getReadWithLocation(int i) {
+	
+	public Object getReadWithLocation(int i) { //not used
 		return read[i];
 	}
-	public void setRead(int x, Object y) {
+	public void setRead(int x, Object y) { //not used
 		read[x] = y;
 	}
+	
+	//getters for values taken from text file to help in Main
+	
 	public int getDestination(int n) {
-		return destination[n];
+		return destination[n]; //destination register
 	}
 	public int getAddressposition(int n) {
-		return addressposition[n];
+		return addressposition[n]; //address for load and store
 	}
 	public int getRegister2(int n) {
-		return register2[n];
+		return register2[n]; //source 1 for mul/div/add/sub
 	}
 	public int getRegister3(int n) {
-		return register3[n];
+		return register3[n]; //source 2 for mul/div/add/sub (not addi or subi)
 	}
 	public String getRegisterName(int n) {
-		return registerName[n];
+		return registerName[n]; //if register is F or R
 	}
 	public int getImm(int n) {
-		return imm[n];
+		return imm[n]; //source 2 for addi and subi
 	}
 	public int getJump(int n) {
-		return jump[n];
+		return jump[n]; //register in BNEZ
 	}
 	public String getBranch(int n) {
-		return branch[n];
+		return branch[n]; //branch name (label) in BNEZ
 	}
-	public boolean getLabel(int n) {
+	//label that is written in a line alone in text file
+	public boolean getLabel(int n) { //checks if line in text file is a label
 		if(label[n]==null)
 			return false;
 		return true;
 	}
-	public int getLabelWithString(String branch) {
+	public int getLabelWithString(String branch) { //returns line of label in text file that BNEZ should branch to
 		for(int i=0;i<label.length;i++) {
 			if(label[i]==null)
 				continue;
@@ -101,18 +112,18 @@ public class Memory {
 		}
 		return -1;
 	}
-	public String getOperationsWithLocation(int i) {
+	public String getOperationsWithLocation(int i) { //used in Main to get operation in loadInstruction using line in text file
 		return operations[i];
 	}
-	public void generateMemory() {
+	public void generateMemory() { //all values in memory are set to 5
 		for(int i = 0; i < memorySize; i++) {
 			Memory[i] = 5;
 		}
 	}
 	public void setChanged(int index) {
-		changed[index] = 1;
+		changed[index] = 1; //if value is accessed because of a load or a store, changed is set to 1 to only print those
 	}
-	public void setOperations() {
+	public void setOperations() { //sets all arrays to values from the read array that stores data from text file
 		operations = new String[count];
 		destination = new int[count];
 		addressposition = new int[count];
@@ -211,7 +222,7 @@ public class Memory {
 		}
 		for(int i=0;i<addressposition.length;i++) {
 			if(addressposition[i]!=-1)
-				setChanged(addressposition[i]);
+				setChanged(addressposition[i]); //if address is used by load or store, to be printed
 		}
 	}
 

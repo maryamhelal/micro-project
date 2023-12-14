@@ -25,79 +25,79 @@ public class Instruction {
 		count = -1;
 	}
 
-	public String getIteration() {
+	public String getIteration() { //GUI
 		if(iteration.equals("0"))
 			return "";
 		else
 			return iteration;
 	}
-	public void setIteration(int value) {
+	public void setIteration(int value) { //set every time loop is entered
 		iteration = ""+value;
 	}
-	public String getInstruction() {
+	public String getInstruction() { //GUI
 		return instruction;
 	}
-	public void setInstruction(String value) {
+	public void setInstruction(String value) { //used in loadInstruction, stores operation
 		instruction = value;
 	}
-	public String getDestinationRegister() {
+	public String getDestinationRegister() { //used in issue step and GUI
 		return destinationRegister;
 	}
-	public void setDestinationRegister(String value) {
+	public void setDestinationRegister(String value) { //used in loadInstruction
 		destinationRegister = value;
 	}
-	public String getJ() {
+	public String getJ() { //used in issue step and GUI
 		return j;
 	}
-	public void setJ(String value) {
+	public void setJ(String value) { //used in loadInstruction
 		j = value;
 	}
-	public String getK() {
+	public String getK() { //used in issue step and GUI
 		return k;
 	}
-	public void setK(String value) {
+	public void setK(String value) { //used in loadInstruction
 		k = value;
 	}
-	public String getIssue() {
+	public String getIssue() { //GUI
 		if(issue==-1)
 			return "";
 		else
 			return ""+issue;
 	}
-	public void setIssue(int value) {
+	public void setIssue(int value) { //used in issue step
 		issue = value;
 	}
-	public String getExecutionComplete() {
+	public String getExecutionComplete() { //GUI
 		return executionComplete;
 	}
-	public void setExecutionStart(int value) {
+	public void setExecutionStart(int value) { //used in execute step when starts executing
 		executionComplete = value + "..";
 	}
-	public void setExecutionComplete(int value) {
+	public void setExecutionComplete(int value) { //used in execute step when count reaches 0
 		executionComplete += value;
 	}
-	public String getWriteResult() {
+	public String getWriteResult() { //GUI
 		if(writeResult==-1)
 			return "";
 		else
 			return ""+writeResult;
 	}
-	public void setWriteResult(int value) {
+	public void setWriteResult(int value) { //used in write step
 		writeResult = value;
 	}
-	public int getResult() {
+	public int getResult() { //used in write step
 		return result;
 	}
-	public void setResult(int value) {
+	public void setResult(int value) { //used in execute step
 		result = value;
 	}
 	public int getCount() {
 		return count;
 	}
-	public void setCount(int value) {
+	public void setCount(int value) { //sets count to maximum clock cycles set by the user according to operation (checked in Main)
 		count = value;
 	}
-	public void decrementCount() {
+	public void decrementCount() { //decreases count every time executeMethod is entered until 0 is reached so can execute
 		count--;
 	}
 	
